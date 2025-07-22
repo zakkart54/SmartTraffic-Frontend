@@ -15,7 +15,7 @@ export default function PasswordForgotPage() {
       </View>
       <View className="flex-1 justify-evenly">
         <View className="relative items-center mb-6 h-10 justify-center">
-            <TouchableOpacity onPress={() => router.replace("/login")} className="absolute left-0">
+            <TouchableOpacity onPress={() => router.replace("/Login")} className="absolute left-0">
             <Image
                 source={require("../asset/icons/back.png")}
                 className="h-6 w-6 tint-white"
@@ -34,7 +34,7 @@ export default function PasswordForgotPage() {
         onChangeText={setEmail}
         />
 
-        <PrimaryButton title="Nhận OTP" onPress={() => router.replace("/forgot-password-otp")} />
+        <PrimaryButton title="Nhận OTP" onPress={() => router.replace("/ForgotPasswordOtp")} />
       </View>
     </View>
   );

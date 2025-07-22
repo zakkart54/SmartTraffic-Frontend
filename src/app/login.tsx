@@ -4,10 +4,41 @@ import TextInputField from "../components/TextInputField";
 import PrimaryButton from "../components/PrimaryButton";
 import AppLogo from "../components/AppLogo";
 import { router } from "expo-router";
+import { useAuth } from "../hooks/useAuth";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const { login, isLoading } = useAuth();
+
+  const handleLogin = async () => {
+    let hasError = false;
+  
+    if (!username.trim()) {
+      setUsernameError("Email không được để trống");
+      hasError = true;
+    } else {
+      setUsernameError("");
+    }
+  
+    if (!password.trim()) {
+      setPasswordError("Mật khẩu không được để trống");
+      hasError = true;
+    } else {
+      setPasswordError("");
+    }
+  
+    if (hasError) return;
+  
+    try {
+      const res = await login(username, password);
+      if (res) router.replace("/");
+    } catch (err: any) {
+      alert(`Lỗi đăng nhập: ${err?.message}`);
+    }
+  };
 
   return (
     <View className="flex-1 bg-[#05416C] p-8">
@@ -26,30 +57,41 @@ export default function LoginPage() {
           </TouchableOpacity> */}
           <Text className="text-3xl text-white font-bold text-center">Đăng nhập</Text>
         </View>
-        
-        <TextInputField
-        label="Email"
-        placeholder="you@example.com"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={email}
-        onChangeText={setEmail}
-        />
+        <View className="mt-4">
+          <TextInputField
+            label="Tên tài khoản"
+            placeholder="Nhập tên tài khoản"
+            // keyboardType="username-address"
+            autoCapitalize="none"
+            value={username}
+            onChangeText={(text) => {
+              setUsername(text);
+              if (usernameError) setUsernameError("");
+            }}
+          />
+          {usernameError ? <Text className="text-red-500 mt-1 ml-1">{usernameError}</Text> : null}
+        </View>
 
-        <TextInputField
-        label="Mật khẩu"
-        placeholder="Nhập mật khẩu"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        />
+        <View className="mt-4">
+          <TextInputField
+            label="Mật khẩu"
+            placeholder="Nhập mật khẩu"
+            secureTextEntry
+            value={password}
+            onChangeText={(text) => {
+              setPassword(text);
+              if (passwordError) setPasswordError("");
+            }}
+          />
+          {passwordError ? <Text className="text-red-500 mt-1 ml-1">{passwordError}</Text> : null}
+        </View>
 
-        <PrimaryButton title="Đăng nhập" onPress={() => router.replace("/")} />
+        <PrimaryButton title="Đăng nhập" disabled={isLoading} onPress={handleLogin} />
         <View>
-          <TouchableOpacity onPress={() => router.push("/register")}> 
+          <TouchableOpacity onPress={() => router.push("/Register")}> 
           <Text className="text-white text-center mt-4">Chưa có tài khoản? Đăng ký</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("/forgot-password")}> 
+          <TouchableOpacity onPress={() => router.push("/ForgotPassword")}> 
           <Text className="text-white text-center mt-4">Quên mật khẩu?</Text>
           </TouchableOpacity>
         </View>

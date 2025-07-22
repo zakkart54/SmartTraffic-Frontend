@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import { View, Text, ImageBackground } from 'react-native';
 import NavigationBar from '@/components/NavigationBar';
+import { router } from "expo-router";
+import { useFocusEffect } from '@react-navigation/native';
 import Header from '@/components/Header';
+import { useAuth } from '@/hooks/useAuth';
 
 const trafficData = {
   location: {
@@ -15,6 +18,31 @@ const trafficData = {
 };
 
 export default function HomePage() {
+  const { accessToken, refresh, logout } = useAuth();
+  const hasCheckedToken = useRef(false); 
+
+  useFocusEffect(
+    useCallback(() => {
+      const checkToken = async () => {
+        if (hasCheckedToken.current) return; 
+        hasCheckedToken.current = true;
+
+        try {
+          if (accessToken) {
+            await refresh();
+          } else {
+            router.push('/Login');
+          }
+        } catch (e) {
+          await logout();
+          router.push('/Login');
+        }
+      };
+
+      checkToken();
+    }, [])
+  );
+
   return (
     <ImageBackground
       source={require('@/asset/background.png')}

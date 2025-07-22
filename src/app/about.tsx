@@ -28,7 +28,7 @@ export default function AboutPage() {
         resizeMode="cover"
       >
         <TouchableOpacity
-            onPress={() => router.replace("/login")}
+            onPress={() => router.replace("/Login")}
             className="absolute right-10 top-10 z-10"
         >
             <Text className="text-white text-lg underline">Skip</Text>
