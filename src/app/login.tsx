@@ -88,7 +88,7 @@ export default function LoginPage() {
 
         <PrimaryButton title="Đăng nhập" disabled={isLoading} onPress={handleLogin} />
         <View>
-          <TouchableOpacity onPress={() => router.push("/Register")}> 
+          <TouchableOpacity onPress={() => router.push("/register")}> 
           <Text className="text-white text-center mt-4">Chưa có tài khoản? Đăng ký</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => router.push("/ForgotPassword")}> 
