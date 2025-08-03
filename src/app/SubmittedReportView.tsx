@@ -73,21 +73,21 @@ const SubmittedReport = () => {
                 <Text className="text-red-500">Không thể hiển thị ảnh.</Text>
               )}
 
-              {img.uploadTime && (
+              {img.uploadTime ? (
                 <>
                   <Text className="text-lg font-semibold text-black mt-4">Thời gian gửi:</Text>
                   <Text className="text-base text-black">
                     {new Date(img.uploadTime).toLocaleString('vi-VN')}
                   </Text>
                 </>
-              )}
+              ) : null}
 
-              {img.location && (
+              {img.location ? (
                 <>
                   <Text className="text-lg font-semibold text-black mt-4">Vị trí:</Text>
                   <Text className="text-base text-black">{img.location}</Text>
                 </>
-              )}
+              ) : null}
             </View>
           ))
         )}

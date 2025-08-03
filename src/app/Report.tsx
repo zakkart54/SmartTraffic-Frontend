@@ -14,7 +14,14 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import { Audio } from 'expo-av';
+import {
+  useAudioRecorder,
+  useAudioPlayer,
+  useAudioRecorderState,
+  AudioModule,
+  RecordingPresets,
+  setAudioModeAsync,
+} from 'expo-audio';
 import Header from '@/components/Header';
 import NavigationBar from '@/components/NavigationBar';
 import PrimaryButton from '@/components/PrimaryButton';
@@ -33,43 +40,26 @@ type TypeKey = typeof types[number]['key'];
 export default function ReportPage() {
   const [selectedType, setSelectedType] = useState<TypeKey>('image');
   const [dataUri, setDataUri] = useState<string | null>(null);
-
-  const [recording, setRecording] = useState<Audio.Recording | null>(null);
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const recorderState = useAudioRecorderState(recorder);
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
-  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
+  const player = useAudioPlayer({ uri: dataUri || '' });
+  // const [isFetchingLocation, setIsFetchingLocation] = useState(false);
 
   const { addImageData, isLoading } = useData();
 
   const clearMedia = useCallback(() => {
     setDataUri('');
-    // if (recording) {
-    //   recording.stopAndUnloadAsync().catch(() => undefined);
-    //   setRecording(null);
-    // }
-    // if (sound) {
-    //   sound.unloadAsync().catch(() => undefined);
-    //   setSound(null);
-    //   setIsPlaying(false);
-    // }
   }, []);
 
   useEffect(() => {
     clearMedia();
   }, [selectedType, clearMedia]);
-  
-  useEffect(() => {
-    return () => {
-      sound?.unloadAsync();
-      recording?.stopAndUnloadAsync();
-    };
-  }, [sound, recording]);
 
   const fetchGPS = async () => {
     try {
-      setIsFetchingLocation(true);
+      // setIsFetchingLocation(true);
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert(
@@ -89,69 +79,46 @@ export default function ReportPage() {
       console.error('Lỗi lấy vị trí:', error);
       Alert.alert('Lỗi', 'Không thể lấy vị trí hiện tại.');
     } finally {
-      setIsFetchingLocation(false);
+      // setIsFetchingLocation(false);
     }
   };
 
   const startRecording = async () => {
     try {
-      const { granted } = await Audio.requestPermissionsAsync();
-      if (!granted) {
-        Alert.alert('Yêu cầu quyền', 'Vui lòng cho phép truy cập micro');
+      const status = await AudioModule.requestRecordingPermissionsAsync();
+      if (!status.granted) {
+        Alert.alert('Micro không được cấp quyền');
         return;
       }
-
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        staysActiveInBackground: false,
-        interruptionModeIOS: 1,
-        playsInSilentModeIOS: true,
-        shouldDuckAndroid: true,
-        interruptionModeAndroid: 1,
-        playThroughEarpieceAndroid: false,
+      await setAudioModeAsync({
+        playsInSilentMode: true,
+        allowsRecording: true,
       });
-
-      const { recording: rec } = await Audio.Recording.createAsync(
-        Audio.RecordingOptionsPresets.HIGH_QUALITY,
-      );
-      setRecording(rec);
+      await recorder.prepareToRecordAsync();
+      recorder.record();
     } catch (err) {
-      console.error('Lỗi ghi âm:', err);
-      Alert.alert('Lỗi', 'Không thể bắt đầu ghi âm. Vui lòng thử lại.');
+      console.error('Lỗi khi bắt đầu ghi âm:', err);
     }
   };
 
   const stopRecording = async () => {
     try {
-      if (!recording) return;
-      await recording.stopAndUnloadAsync();
-      const uri = recording.getURI();
-      setDataUri(uri ?? null);
-      setRecording(null);
+      await recorder.stop();
+      const result = await recorder.getStatus();
+      if (result) {
+        setDataUri(result.url);
+      }
     } catch (err) {
       console.error('Lỗi khi dừng ghi âm:', err);
     }
   };
 
-  const playSound = async () => {
-    if (!dataUri) return;
+  const playAudio = async () => {
     try {
-      setIsPlaying(true);
-      const { sound: newSound } = await Audio.Sound.createAsync(
-        { uri: dataUri },
-        {},
-        status => {
-          if (status.isLoaded && status.didJustFinish) {
-            setIsPlaying(false);
-          }
-        },
-      );
-      setSound(newSound);
-      await newSound.playAsync();
+      await player.seekTo(0);
+      await player.play();
     } catch (err) {
-      console.error('Lỗi phát âm thanh:', err);
-      Alert.alert('Lỗi', 'Không thể phát âm thanh.');
-      setIsPlaying(false);
+      console.error('Lỗi khi phát audio:', err);
     }
   };
 
@@ -262,7 +229,7 @@ export default function ReportPage() {
           ))}
         </View>
 
-        {selectedType === 'image' && (
+        {selectedType === 'image' ? (
           <View className="bg-[#edf2fc] rounded-xl mb-4 justify-center items-center min-h-[100px]">
             <TouchableOpacity onPress={() => pickFile('Images')} className="items-center">
               {dataUri ? (
@@ -285,9 +252,9 @@ export default function ReportPage() {
               )}
             </TouchableOpacity>
           </View>
-        )}
+        ) : null}
 
-        {selectedType === 'video' && (
+        {selectedType === 'video' ? (
           <View className="bg-[#edf2fc] rounded-xl mb-4 justify-center items-center min-h-[100px]">
             <TouchableOpacity onPress={() => pickFile('Videos')} className="items-center">
               {dataUri ? (
@@ -308,40 +275,40 @@ export default function ReportPage() {
               )}
             </TouchableOpacity>
           </View>
-        )}
+        ) : null}
 
-        {selectedType === 'audio' && (
+        {selectedType === 'audio' ? (
           <View className="bg-[#edf2fc] rounded-xl mb-4 justify-center items-center min-h-[100px] p-4">
             <TouchableOpacity
               className="bg-blue-500 rounded-md px-4 py-2 mb-3"
-              onPress={recording ? stopRecording : startRecording}
+              onPress={recorderState.isRecording ? stopRecording : startRecording}
             >
               <Text className="text-white font-bold">
-                {recording ? 'Dừng ghi âm' : 'Bắt đầu ghi âm'}
+                {recorderState.isRecording ? 'Dừng ghi âm' : 'Bắt đầu ghi âm'}
               </Text>
             </TouchableOpacity>
 
-            {(dataUri && !recording) && (
+            {(dataUri && !recorderState.isRecording) ? (
               <View className="items-center">
                 <Text className="text-black mb-2 text-center">
                   Đã ghi âm: {dataUri.split('/').pop()}
                 </Text>
                 <TouchableOpacity
                   className="bg-green-500 rounded-md px-4 py-2 mb-2"
-                  onPress={playSound}
-                  disabled={isPlaying}
+                  onPress={playAudio}
+                  disabled={player.playing}
                 >
                   <Text className="text-white font-bold">
-                    {isPlaying ? 'Đang phát...' : 'Phát lại'}
+                    {player.playing ? 'Đang phát...' : 'Phát lại'}
                   </Text>
                 </TouchableOpacity>
-                {isPlaying && <ActivityIndicator size="small" color="#10b981" />}
+                {player.playing ? <ActivityIndicator size="small" color="#10b981" /> : null}
               </View>
-            )}
+            ) : null}
           </View>
-        )}
+        ) : null}
 
-        {selectedType === 'text' && (
+        {selectedType === 'text' ? (
           <View className="bg-[#edf2fc] rounded-xl mb-4 min-h-[100px]">
             <TextInput
               placeholder="Nhập mô tả tình trạng giao thông bằng văn bản"
@@ -352,7 +319,7 @@ export default function ReportPage() {
               multiline
             />
           </View>
-        )}
+        ) : null}
 
         <TextInput
           placeholder="Mô tả thêm tình trạng"
@@ -380,12 +347,12 @@ export default function ReportPage() {
         </View>
       </View>
 
-      {isLoading && (
+      {isLoading ? (
         <View className="absolute inset-0 bg-black/40 justify-center items-center z-50">
           <ActivityIndicator size="large" color="#fff" />
           <Text className="text-white mt-2">Đang gửi dữ liệu...</Text>
         </View>
-      )}
+      ) : null}
       <NavigationBar />
 
     </ImageBackground>

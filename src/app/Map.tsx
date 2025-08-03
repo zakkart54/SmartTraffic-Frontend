@@ -45,8 +45,6 @@ export default function MapPage() {
       <View style={{ flex: 1, margin: 16, borderRadius: 16, overflow: "hidden" }}>
         <MapView
           style={{ flex: 1 }}
-        //   region={region}
-        //   onRegionChange={setRegion}
           initialRegion={INITIAL_REGION}
           zoomEnabled 
           zoomControlEnabled={true}
@@ -58,21 +56,6 @@ export default function MapPage() {
             <Polyline key={idx} coordinates={coords} strokeColor="#FF0000" strokeWidth={3} />
           ))}
         </MapView>
-
-        {/* <View style={{ position: "absolute", left: 10, top: 10 }}>
-          <TouchableOpacity
-            onPress={() => zoom(0.5)}
-            style={{ backgroundColor: "#ffffffcc", paddingVertical: 6, paddingHorizontal: 12, borderTopLeftRadius: 8, borderTopRightRadius: 8 }}
-          >
-            <Text style={{ fontSize: 18, fontWeight: "bold" }}>+</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => zoom(2)}
-            style={{ backgroundColor: "#ffffffcc", paddingVertical: 6, paddingHorizontal: 12, borderBottomLeftRadius: 8, borderBottomRightRadius: 8, borderTopWidth: 1, borderColor: "#ddd" }}
-          >
-            <Text style={{ fontSize: 18, fontWeight: "bold" }}>−</Text>
-          </TouchableOpacity>
-        </View> */}
       </View>
 
       <NavigationBar />

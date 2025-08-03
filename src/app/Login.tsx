@@ -48,20 +48,12 @@ export default function LoginPage() {
 
       <View className="flex-1 justify-evenly">
         <View className="relative items-center mb-6 h-10 justify-center">
-          {/* <TouchableOpacity onPress={() => router.back()} className="absolute left-0">
-            <Image
-              source={require("../asset/icons/back.png")}
-              className="h-6 w-6 tint-white"
-              resizeMode="contain"
-            />
-          </TouchableOpacity> */}
           <Text className="text-3xl text-white font-bold text-center">Đăng nhập</Text>
         </View>
         <View className="mt-4">
           <TextInputField
             label="Tên tài khoản"
             placeholder="Nhập tên tài khoản"
-            // keyboardType="username-address"
             autoCapitalize="none"
             value={username}
             onChangeText={(text) => {
