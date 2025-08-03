@@ -4,9 +4,9 @@ import { router, usePathname } from "expo-router";
 
 const tabs = [
   { label: "Trang chủ", path: "/", icon: require("@/asset/icons/home.png") },
-  { label: "Bản đồ", path: "/map", icon: require("@/asset/icons/map.png") },
-  { label: "Gửi tình trạng", path: "/report", icon: require("@/asset/icons/report.png") },
-  { label: "Gợi ý", path: "/suggest", icon: require("@/asset/icons/suggest.png") },
+  { label: "Bản đồ", path: "/Map", icon: require("@/asset/icons/map.png") },
+  { label: "Gửi tình trạng", path: "/Report", icon: require("@/asset/icons/report.png") },
+  { label: "Gợi ý", path: "/Suggest", icon: require("@/asset/icons/suggest.png") },
 ];
 
 export default function NavigationBar() {

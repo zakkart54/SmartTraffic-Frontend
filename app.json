@@ -8,7 +8,13 @@
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Cho phép ứng dụng sử dụng micro để ghi âm"
+        }
+      ]
     ],
     "name": "app",
     "slug": "app",
@@ -19,7 +25,7 @@
       "enabled": false
     },
     "android": {
-      "package": "com.smarttraffic.app" 
+      "package": "com.smarttraffic.app"
     }
   }
 }
