@@ -81,30 +81,30 @@ export default function HomePage() {
       <Header />
       <View className="flex-1 px-4 pt-4 justify-evenly">
         <View className="mt-4">
-          <Text className="text-white text-2xl font-bold text-center">Vị trí hiện tại</Text>
+          <Text className="text-white text-4xl font-bold text-center">Vị trí hiện tại</Text>
 
           <View className="bg-[#edf2fc] p-8 rounded-2xl mt-4">
             <View className="flex-row justify-between">
               <View className="items-center mt-2">
-                <Text className="text-black text-sm">Kinh độ</Text>
-                <Text className="text-black text-2xl font-bold">{trafficData.location.longitude}</Text>
-                <Text className="text-black text-lg">{trafficData.location.longitudeDir}</Text>
+                <Text className="text-black text-xl">Kinh độ</Text>
+                <Text className="text-black text-3xl font-bold">{trafficData.location.longitude}</Text>
+                <Text className="text-black text-xl">{trafficData.location.longitudeDir}</Text>
               </View>
 
               <View className="items-center mt-2">
-                <Text className="text-black text-sm">Vĩ độ</Text>
-                <Text className="text-black text-2xl font-bold">{trafficData.location.latitude}</Text>
-                <Text className="text-black text-lg">{trafficData.location.latitudeDir}</Text>
+                <Text className="text-black text-xl">Vĩ độ</Text>
+                <Text className="text-black text-3xl font-bold">{trafficData.location.latitude}</Text>
+                <Text className="text-black text-xl">{trafficData.location.latitudeDir}</Text>
               </View>
             </View>
             <View className="items-center mt-2">
-              <Text className="text-black text-base">{trafficData.location.street}</Text>
+              <Text className="text-black text-2xl font-bold">{trafficData.location.street}</Text>
             </View>
           </View>
         </View>
 
         <View className="mt-4">
-          <Text className="text-white text-2xl font-bold text-center">
+          <Text className="text-white text-4xl font-bold text-center">
             Tình trạng giao thông
           </Text>
           {trafficData.status.map((item, index) => (
@@ -118,9 +118,9 @@ export default function HomePage() {
               }
             >
               <View className="bg-[#edf2fc] mb-2 p-6 rounded-xl mt-4">
-                <Text className="text-black text-xl font-bold">
-                  {item.name} {item.time}{' '}
-                  <Text
+                <Text className="text-black text-2xl font-bold">
+                  {item.name} {'-'} {item.time}
+                  {/* <Text
                     className={
                       parseInt(item.reliability) >= 80
                         ? 'text-green-600'
@@ -130,7 +130,7 @@ export default function HomePage() {
                     }
                   >
                     {item.reliability}
-                  </Text>
+                  </Text> */}
                 </Text>
               </View>
             </TouchableOpacity>

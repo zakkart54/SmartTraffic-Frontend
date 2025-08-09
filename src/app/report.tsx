@@ -241,10 +241,10 @@ export default function ReportPage() {
     >
       <Header />
 
-      <View className="flex-1 bg-blue-900/90 px-4 pt-4 justify-between">
+      <View className="flex-1 bg-blue-900/90 px-4 pt-20 justify-between">
 
         <View className="mt-4 mb-2">
-          <Text className="text-white text-2xl font-bold text-center">Gửi tình trạng</Text>
+          <Text className="text-white text-4xl font-bold text-center">Gửi tình trạng</Text>
         </View>
 
         <View className="bg-blue-200 p-4 rounded-xl flex-row justify-between mb-4">
