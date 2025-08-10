@@ -86,6 +86,9 @@ export default function LoginPage() {
           <TouchableOpacity onPress={() => router.push("/ForgotPassword")}> 
           <Text className="text-white text-center mt-4">Quên mật khẩu?</Text>
           </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/")}> 
+          <Text className="text-white text-center mt-4">Bỏ qua</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>

@@ -1,20 +1,8 @@
 import React, { useState } from "react";
 import { View, ImageBackground, TouchableOpacity, Text } from "react-native";
-import MapView, { Polyline, Region } from "react-native-maps";
+import MapView, { Polyline, Region, Marker, Callout } from "react-native-maps";
 import Header from "../components/Header";
 import NavigationBar from "../components/NavigationBar";
-
-let lines: any[] = [];
-try {
-  const geojson = require("../data/points.json");
-  lines = geojson.features.filter((f: any) => f.geometry.type === "LineString");
-} catch (e) {
-  console.warn("Không thể tải geojson:", e);
-}
-
-const polylines = lines.map((ln: any) =>
-  ln.geometry.coordinates.map(([lon, lat]: number[]) => ({ latitude: lat, longitude: lon }))
-);
 
 const INITIAL_REGION: Region = {
   latitude: 10.82,
@@ -24,15 +12,22 @@ const INITIAL_REGION: Region = {
 };
 
 export default function MapPage() {
-//   const [region, setRegion] = useState<Region>(INITIAL_REGION);
+  const geojson = require("../data/export.json");
 
-//   const zoom = (factor: number) => {
-//     setRegion((prev) => ({
-//       ...prev,
-//       latitudeDelta: prev.latitudeDelta * factor,
-//       longitudeDelta: prev.longitudeDelta * factor,
-//     }));
-//   };
+  const lines = geojson.features.filter((f: any) => f.geometry.type === "MultiLineString");
+  
+  const polylines: { latitude: number; longitude: number }[][] = lines.flatMap(
+    (feature: any) =>
+      feature.geometry.coordinates.map((line: number[][]) =>
+        line.map(([lon, lat]: number[]) => ({
+          latitude: lat,
+          longitude: lon,
+        }))
+      )
+  );
+
+  const tooltipLine = polylines[0] ?? [];
+  const tooltipPoint = tooltipLine[Math.floor(tooltipLine.length / 2)];
 
   return (
     <ImageBackground
@@ -46,15 +41,28 @@ export default function MapPage() {
         <MapView
           style={{ flex: 1 }}
           initialRegion={INITIAL_REGION}
-          zoomEnabled 
-          zoomControlEnabled={true}
+          zoomEnabled
+          zoomControlEnabled
           scrollEnabled
           pitchEnabled
           showsUserLocation
         >
-          {polylines.map((coords, idx) => (
-            <Polyline key={idx} coordinates={coords} strokeColor="#FF0000" strokeWidth={3} />
-          ))}
+          {polylines.map((coords, idx) => {
+            const midPoint = coords[Math.floor(coords.length / 2)];
+            return (
+              <React.Fragment key={idx}>
+                <Polyline coordinates={coords} strokeColor="#FF0000" strokeWidth={3} />
+                <Marker coordinate={midPoint}>
+                  <Callout tooltip>
+                    <View style={{ backgroundColor: '#fff', padding: 8, borderRadius: 8 }}>
+                      <Text style={{ fontWeight: 'bold' }}>Tuyến ABC</Text>
+                      <Text>Chiều dài: 1.2km</Text>
+                    </View>
+                  </Callout>
+                </Marker>
+              </React.Fragment>
+            );
+          })}
         </MapView>
       </View>
 
