@@ -24,7 +24,7 @@ export default function NavigationBar() {
           >
             <Image
               source={icon}
-              className={` ${active ? "tint-white" : "tint-blue-300"}`}
+              className={` ${active ? "tint-white" : "tint-blue-800"}`}
               resizeMode="contain"
               style={{ width: "50%", height: undefined, aspectRatio: 1 }}
             />

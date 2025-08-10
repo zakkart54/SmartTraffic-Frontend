@@ -52,7 +52,7 @@ export default function SettingsPage() {
         </View>
 
         {/* Header */}
-        <View className="relative items-center mb-6 h-10 justify-center">
+        <View className="relative items-center mt-12 mb-9 h-10 justify-center">
           <TouchableOpacity onPress={() => router.back()} className="absolute left-0">
             <Image
               source={require("../asset/icons/back.png")}
@@ -86,7 +86,7 @@ export default function SettingsPage() {
           editable={false}
         />
 
-        <View className="flex-row justify-between mt-4">
+        <View className="flex-row justify-between mt-16">
             <View className="flex-1 mr-2">
                 <PrimaryButton title="Cập nhật" onPress={handleUpdate} />
             </View>

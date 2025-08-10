@@ -26,6 +26,7 @@ import Header from '@/components/Header';
 import NavigationBar from '@/components/NavigationBar';
 import PrimaryButton from '@/components/PrimaryButton';
 import { useData } from '@/hooks/useData';
+import { useImage } from '@/hooks/useImage';
 import { format } from "date-fns";
 
 const types = [
@@ -47,7 +48,8 @@ export default function ReportPage() {
   const player = useAudioPlayer({ uri: dataUri || '' });
   // const [isFetchingLocation, setIsFetchingLocation] = useState(false);
 
-  const { addImageData, isLoading } = useData();
+  const { addImageData } = useData();
+  const { addImage, isLoading} = useImage();
 
   const clearMedia = useCallback(() => {
     setDataUri('');
@@ -176,18 +178,32 @@ export default function ReportPage() {
     }
   
     try {
+      // await addImageData();
+      const formData = new FormData();
       const fileName = dataUri!.split('/').pop()!;
-      const file: File | Blob = {
+      // const file: File | Blob = {
+      //   uri: dataUri!,
+      //   name: fileName,
+      //   type: 'image/jpeg',
+      // } as any;
+      // await addImageData({
+      //   type: 'image',
+      //   uploadTime: format(new Date(), 'yyyy/MM/dd'),
+      //   location
+      // }, file);
+
+      formData.append('fileUpload', {
         uri: dataUri!,
         name: fileName,
         type: 'image/jpeg',
-      } as any;
-  
-      await addImageData({
-        type: 'image',
-        uploadTime: format(new Date(), 'yyyy/MM/dd'),
-        location
-      }, file);
+      } as any);
+
+      formData.append('dataID', '68983c97af72c3f8a22bdac7');
+      formData.append('type', 'image');
+      formData.append('uploadTime', format(new Date(), 'yyyy/MM/dd'));
+      formData.append('location', location);
+
+      await addImage(formData);
   
       Alert.alert('Thành công', 'Hình ảnh đã được gửi.');
       clearMedia();
@@ -208,10 +224,10 @@ export default function ReportPage() {
     >
       <Header />
 
-      <View className="flex-1 bg-blue-900/90 px-4 pt-4 justify-between">
+      <View className="flex-1 bg-blue-900/90 px-4 pt-10 justify-between">
 
-        <View className="mt-4 mb-2">
-          <Text className="text-white text-2xl font-bold text-center">Gửi tình trạng</Text>
+        <View className="mb-2">
+          <Text className="text-white text-4xl font-bold text-center">Gửi tình trạng giao thông</Text>
         </View>
 
         <View className="bg-blue-200 p-4 rounded-xl flex-row justify-between mb-4">
@@ -230,7 +246,7 @@ export default function ReportPage() {
         </View>
 
         {selectedType === 'image' ? (
-          <View className="bg-[#edf2fc] rounded-xl mb-4 justify-center items-center min-h-[100px]">
+          <View className="bg-[#edf2fc] rounded-xl mb-4 justify-center items-center min-h-[200px]">
             <TouchableOpacity onPress={() => pickFile('Images')} className="items-center">
               {dataUri ? (
                 <Image
@@ -255,7 +271,7 @@ export default function ReportPage() {
         ) : null}
 
         {selectedType === 'video' ? (
-          <View className="bg-[#edf2fc] rounded-xl mb-4 justify-center items-center min-h-[100px]">
+          <View className="bg-[#edf2fc] rounded-xl mb-4 justify-center items-center min-h-[200px]">
             <TouchableOpacity onPress={() => pickFile('Videos')} className="items-center">
               {dataUri ? (
                 <Text className="text-black text-center font-medium">
@@ -278,7 +294,7 @@ export default function ReportPage() {
         ) : null}
 
         {selectedType === 'audio' ? (
-          <View className="bg-[#edf2fc] rounded-xl mb-4 justify-center items-center min-h-[100px] p-4">
+          <View className="bg-[#edf2fc] rounded-xl mb-4 justify-center items-center min-h-[200px] p-4">
             <TouchableOpacity
               className="bg-blue-500 rounded-md px-4 py-2 mb-3"
               onPress={recorderState.isRecording ? stopRecording : startRecording}
@@ -309,7 +325,7 @@ export default function ReportPage() {
         ) : null}
 
         {selectedType === 'text' ? (
-          <View className="bg-[#edf2fc] rounded-xl mb-4 min-h-[100px]">
+          <View className="bg-[#edf2fc] rounded-xl mb-4 min-h-[200px]">
             <TextInput
               placeholder="Nhập mô tả tình trạng giao thông bằng văn bản"
               placeholderTextColor="#6b7280"
@@ -321,13 +337,13 @@ export default function ReportPage() {
           </View>
         ) : null}
 
-        <TextInput
+        {/* <TextInput
           placeholder="Mô tả thêm tình trạng"
           placeholderTextColor="#6b7280"
           value={description}
           onChangeText={setDescription}
           className="bg-[#edf2fc] text-black rounded-xl px-4 py-3 mb-4"
-        />
+        /> */}
 
         <View className="flex-row items-center bg-[#edf2fc] rounded-xl px-2 py-3 mb-4">
           <TextInput
@@ -342,7 +358,7 @@ export default function ReportPage() {
           </TouchableOpacity>
         </View>
 
-        <View className="mb-4">
+        <View className="mb-4 px-16">
           <PrimaryButton title="Gửi tình trạng" onPress={handleSubmit} />
         </View>
       </View>

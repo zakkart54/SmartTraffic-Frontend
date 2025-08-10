@@ -50,7 +50,7 @@ export default function RegisterPage() {
       </View>
       <View className="flex-1 justify-evenly">
         <View className="relative items-center mb-6 h-10 justify-center">
-          <TouchableOpacity onPress={() => router.replace("/Login")} className="absolute left-0">
+          <TouchableOpacity onPress={() => router.replace("/login")} className="absolute left-0">
             <Image
               source={require("../asset/icons/back.png")}
               className="h-6 w-6 tint-white"
@@ -95,7 +95,7 @@ export default function RegisterPage() {
 
         <PrimaryButton title="Tạo tài khoản" onPress={handleRegister} disabled={isLoading} />
 
-        <TouchableOpacity onPress={() => router.replace("/Login")}>
+        <TouchableOpacity onPress={() => router.replace("/login")}>
           <Text className="text-white text-center mt-4">Đã có tài khoản? Đăng nhập</Text>
         </TouchableOpacity>
       </View>

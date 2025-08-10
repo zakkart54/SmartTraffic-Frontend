@@ -28,7 +28,7 @@ export default function AboutPage() {
         resizeMode="cover"
       >
         <TouchableOpacity
-            onPress={() => router.replace("/Login")}
+            onPress={() => router.replace("/login")}
             className="absolute right-10 top-10 z-10"
         >
             <Text className="text-white text-lg underline">Skip</Text>
@@ -61,6 +61,15 @@ export default function AboutPage() {
                     {page.description}
                 </Text>
                 </View>
+
+                {page.title === "BẮT ĐẦU NGAY" && (
+                  <TouchableOpacity
+                    onPress={() => router.replace("/register")}
+                    className="mt-4 bg-white px-6 py-3 rounded-full"
+                  >
+                    <Text className="text-[#063970] text-lg font-bold">Đăng ký</Text>
+                  </TouchableOpacity>
+                )}
             </View>
             ))}
         </ScrollView>
