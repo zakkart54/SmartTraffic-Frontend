@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity, Modal, Pressable } from "react-native";
 import { router } from "expo-router";
+import { useTheme } from "@/hooks/useTheme";
 
 interface Status {
   name: string;
@@ -57,10 +58,11 @@ export default function Header({ userName = "User", status = [], unreadCount = 0
     return "text-red-600";
   };
 
+  const { theme } = useTheme();
+
   return (
-    <View className="bg-[#063970]">
-      <View className="flex-row items-center justify-between bg-[#063970] px-4 py-5"></View>
-      <View className="flex-row items-center justify-between bg-[#edf2fc] px-4 py-5 rounded-2xl">
+    <View className={theme === "dark" ? "bg-[#063970]" : "bg-[#b6d2fe]"}>
+      <View className="flex-row items-center justify-between bg-[#edf2fc] px-4 py-5 rounded-2xl mt-10">
         <Text className="text-black text-xl font-semibold">Xin chào, {userName}</Text>
 
         <View className="flex-row items-center space-x-4">
@@ -95,9 +97,9 @@ export default function Header({ userName = "User", status = [], unreadCount = 0
           >
             <Pressable
               onPress={() => setMenuVisible(false)}
-              className="flex-1 justify-start items-end pt-10  bg-transparent"
+              className="flex-1 justify-start items-end pt-16 bg-transparent"
             >
-              <View className="bg-white rounded-md shadow-lg p-2 w-40">
+              <View className="bg-white rounded-md shadow-lg p-2 w-40 mt-2">
                 <TouchableOpacity onPress={handleViewInfo} className="py-2">
                   <Text className="text-black">Xem thông tin</Text>
                 </TouchableOpacity>
@@ -119,9 +121,9 @@ export default function Header({ userName = "User", status = [], unreadCount = 0
           >
             <Pressable
               onPress={() => setNotifVisible(false)}
-              className="flex-1 justify-start items-end pt-10 bg-transparent"
+              className="flex-1 justify-start items-end pt-16 bg-transparent"
             >
-              <View className="bg-white rounded-md shadow-lg p-2 w-72 mr-2">
+              <View className="bg-white rounded-md shadow-lg p-2 w-72 mr-2 mt-2">
               <Text className="text-black font-semibold px-2 pb-2">Thông báo</Text>
 
                 {status.length === 0 ? (

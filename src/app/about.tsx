@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { View, Text, ScrollView, Dimensions, ImageBackground, TouchableOpacity } from "react-native";
 import AppLogo from "../components/AppLogo";
 import { router } from "expo-router";
+import { useTheme } from "@/hooks/useTheme";
 
 const { width } = Dimensions.get("window");
 const pages = [
@@ -20,13 +21,19 @@ export default function AboutPage() {
     setPageIndex(newIndex);
   };
 
+  const { theme } = useTheme();
+
   return (
-    <View className="flex-1 bg-[#063970]">
+    <View className={`flex-1 p-8 ${theme === "dark" ? "bg-[#063970]" : "bg-[#b6d2fe]"}`}>
       <ImageBackground
-        source={require("../asset/background.png")}
-        style={{ flex: 1, width: "100%", height: "100%" }}
+        source={
+          theme === "dark"
+            ? require("@/asset/background.png")
+            : require("@/asset/background1.png")
+        }
         resizeMode="cover"
-      >
+        style={{ flex: 1, width: "100%", height: "100%" }}
+    >
         <TouchableOpacity
             onPress={() => router.replace("/login")}
             className="absolute right-10 top-10 z-10"

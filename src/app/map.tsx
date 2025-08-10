@@ -3,6 +3,7 @@ import { View, ImageBackground, TouchableOpacity, Text } from "react-native";
 import MapView, { Polyline, Region } from "react-native-maps";
 import Header from "../components/Header";
 import NavigationBar from "../components/NavigationBar";
+import { useTheme } from '@/hooks/useTheme';
 
 let lines: any[] = [];
 try {
@@ -34,11 +35,17 @@ export default function MapPage() {
 //     }));
 //   };
 
+const { theme } = useTheme();
+
   return (
     <ImageBackground
-      source={require("@/asset/background.png")}
+      source={
+        theme === "dark"
+          ? require("@/asset/background.png")
+          : require("@/asset/background1.png")
+      }
       resizeMode="cover"
-      style={{ flex: 1 }}
+      style={{ flex: 1, width: "100%", height: "100%" }}
     >
       <Header userName="User" />
 

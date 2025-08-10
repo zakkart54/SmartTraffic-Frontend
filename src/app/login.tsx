@@ -5,6 +5,7 @@ import PrimaryButton from "../components/PrimaryButton";
 import AppLogo from "../components/AppLogo";
 import { router } from "expo-router";
 import { useAuth } from "../hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -40,8 +41,10 @@ export default function LoginPage() {
     }
   };
 
+  const { theme } = useTheme();
+
   return (
-    <View className="flex-1 bg-[#05416C] p-8">
+    <View className={`flex-1 p-8 ${theme === "dark" ? "bg-[#05416C]" : "bg-[#b6d2fe]"}`}>
       <View className="mt-16">
         <AppLogo/>
       </View>
@@ -55,7 +58,7 @@ export default function LoginPage() {
               resizeMode="contain"
             />
           </TouchableOpacity> */}
-          <Text className="text-3xl text-white font-bold text-center">Đăng nhập</Text>
+          <Text className={`text-3xl font-bold text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Đăng nhập</Text>
         </View>
         <View className="mt-4">
           <TextInputField
@@ -89,10 +92,10 @@ export default function LoginPage() {
         <PrimaryButton title="Đăng nhập" disabled={isLoading} onPress={handleLogin} />
         <View>
           <TouchableOpacity onPress={() => router.push("/register")}> 
-          <Text className="text-white text-center mt-4">Chưa có tài khoản? Đăng ký</Text>
+          <Text className={`text-center mt-4 ${theme === "dark" ? "text-white" : "text-black"}`}>Chưa có tài khoản? Đăng ký</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => router.push("/ForgotPassword")}> 
-          <Text className="text-white text-center mt-4">Quên mật khẩu?</Text>
+          <Text className={`text-center mt-4 ${theme === "dark" ? "text-white" : "text-black"}`}>Quên mật khẩu?</Text>
           </TouchableOpacity>
         </View>
       </View>

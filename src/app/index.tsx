@@ -1,10 +1,11 @@
 import React, { useCallback, useRef } from 'react';
-import { View, Text, ImageBackground, TouchableOpacity } from 'react-native';
+import { View, Text, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
 import NavigationBar from '@/components/NavigationBar';
 import { router } from "expo-router";
 import { useFocusEffect } from '@react-navigation/native';
 import Header from '@/components/Header';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/hooks/useTheme';
 
 const trafficData = {
   location: {
@@ -71,72 +72,79 @@ export default function HomePage() {
   //     checkToken();
   //   }, [])
   // );
+  const { theme } = useTheme();
 
   return (
     <ImageBackground
-      source={require('@/asset/background.png')}
+      source={
+        theme === "dark"
+          ? require("@/asset/background.png")
+          : require("@/asset/background1.png")
+      }
       resizeMode="cover"
       style={{ flex: 1, width: "100%", height: "100%" }}
     >
       <Header />
-      <View className="flex-1 px-4 pt-4 justify-evenly">
-        <View className="mt-4">
-          <Text className="text-white text-4xl font-bold text-center">Vị trí hiện tại</Text>
+      <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
+        <View className="flex-1 px-4 pt-4 justify-evenly">
+          <View className="mt-20">
+            <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Vị trí hiện tại</Text>
 
-          <View className="bg-[#edf2fc] p-8 rounded-2xl mt-4">
-            <View className="flex-row justify-between">
-              <View className="items-center mt-2">
-                <Text className="text-black text-xl">Kinh độ</Text>
-                <Text className="text-black text-3xl font-bold">{trafficData.location.longitude}</Text>
-                <Text className="text-black text-xl">{trafficData.location.longitudeDir}</Text>
-              </View>
+            <View className="bg-[#edf2fc] p-8 rounded-2xl mt-4">
+              <View className="flex-row justify-between">
+                <View className="items-center mt-2">
+                  <Text className="text-black text-xl">Kinh độ</Text>
+                  <Text className="text-black text-3xl font-bold">{trafficData.location.longitude}</Text>
+                  <Text className="text-black text-xl">{trafficData.location.longitudeDir}</Text>
+                </View>
 
-              <View className="items-center mt-2">
-                <Text className="text-black text-xl">Vĩ độ</Text>
-                <Text className="text-black text-3xl font-bold">{trafficData.location.latitude}</Text>
-                <Text className="text-black text-xl">{trafficData.location.latitudeDir}</Text>
+                <View className="items-center mt-2">
+                  <Text className="text-black text-xl">Vĩ độ</Text>
+                  <Text className="text-black text-3xl font-bold">{trafficData.location.latitude}</Text>
+                  <Text className="text-black text-xl">{trafficData.location.latitudeDir}</Text>
+                </View>
               </View>
-            </View>
-            <View className="items-center mt-2">
-              <Text className="text-black text-2xl font-bold">{trafficData.location.street}</Text>
+              <View className="items-center mt-2">
+                <Text className="text-black text-2xl font-bold">{trafficData.location.street}</Text>
+              </View>
             </View>
           </View>
-        </View>
 
-        <View className="mt-4">
-          <Text className="text-white text-4xl font-bold text-center">
-            Tình trạng giao thông
-          </Text>
-          {trafficData.status.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() =>
-                router.push({
-                  pathname: '/detailStatus',
-                  params: { status: JSON.stringify(item) },
-                })
-              }
-            >
-              <View className="bg-[#edf2fc] mb-2 p-6 rounded-xl mt-4">
-                <Text className="text-black text-2xl font-bold">
-                  {item.name} {'-'} {item.time}
-                  {/* <Text
-                    className={
-                      parseInt(item.reliability) >= 80
-                        ? 'text-green-600'
-                        : parseInt(item.reliability) >= 50
-                        ? 'text-orange-500'
-                        : 'text-red-500'
-                    }
-                  >
-                    {item.reliability}
-                  </Text> */}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))}
+          <View className="mt-20">
+            <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-black"}`}>
+              Tình trạng giao thông
+            </Text>
+            {trafficData.status.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() =>
+                  router.push({
+                    pathname: '/detailStatus',
+                    params: { status: JSON.stringify(item) },
+                  })
+                }
+              >
+                <View className="bg-[#edf2fc] mb-2 p-6 rounded-xl mt-4">
+                  <Text className="text-black text-2xl font-bold">
+                    {item.name} {'-'} {item.time}
+                    {/* <Text
+                      className={
+                        parseInt(item.reliability) >= 80
+                          ? 'text-green-600'
+                          : parseInt(item.reliability) >= 50
+                          ? 'text-orange-500'
+                          : 'text-red-500'
+                      }
+                    >
+                      {item.reliability}
+                    </Text> */}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
-      </View>
+      </ScrollView>
       <NavigationBar />
     </ImageBackground>
   );

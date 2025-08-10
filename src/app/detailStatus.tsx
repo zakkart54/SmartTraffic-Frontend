@@ -2,6 +2,7 @@ import { View, Text, ImageBackground, ScrollView, TextInput,} from 'react-native
 import NavigationBar from '@/components/NavigationBar';
 import { useLocalSearchParams } from 'expo-router';
 import Header from '@/components/Header';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function DetailStatus() {
   const { status } = useLocalSearchParams();
@@ -15,18 +16,24 @@ export default function DetailStatus() {
     );
   }
 
+  const { theme } = useTheme();
+
   return (
     <ImageBackground
-      source={require('@/asset/background.png')}
+      source={
+        theme === "dark"
+          ? require("@/asset/background.png")
+          : require("@/asset/background1.png")
+      }
       resizeMode="cover"
-      style={{ flex: 1, width: '100%', height: '100%' }}
+      style={{ flex: 1, width: "100%", height: "100%" }}
     >
       <Header />
       <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
         <View className="flex-1 px-4 pt-20 justify-evenly">
           {/* Tình trạng */}
           <View className="mt-4">
-            <Text className="text-white text-4xl font-bold text-center">Tình trạng</Text>
+            <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Tình trạng</Text>
             <View className="bg-[#edf2fc] p-4 rounded-xl mt-4 items-center">
               <Text className="text-black-800 text-3xl font-bold">{statusData.time}</Text>
               <Text className="text-black text-3xl mt-1">{statusData.name}</Text>
@@ -52,7 +59,7 @@ export default function DetailStatus() {
 
           {/* Chi tiết tình trạng */}
           <View className="mt-8">
-            <Text className="text-white text-4xl font-bold text-center">Chi tiết tình trạng</Text>
+          <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Chi tiết tình trạng</Text>
             {/* <View className="bg-[#edf2fc] p-4 rounded-xl mt-2 items-center">
               <Image
                 source={statusData.image}
@@ -72,7 +79,7 @@ export default function DetailStatus() {
 
           {/* Mô tả tình trạng */}
           <View className="mt-8">
-            <Text className="text-white text-4xl font-bold text-center">Mô tả tình trạng</Text>
+          <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Mô tả tình trạng</Text>
             <View className="bg-[#edf2fc] p-2 rounded-xl mt-2">
               <TextInput
                 value={statusData.description}
@@ -85,7 +92,7 @@ export default function DetailStatus() {
 
           {/* Vị trí phát hiện */}
           <View className="mt-8">
-            <Text className="text-white text-4xl font-bold text-center">Vị trí phát hiện</Text>
+          <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Vị trí phát hiện</Text>
             <View className="bg-[#edf2fc] p-8 rounded-2xl mt-4">
               <View className="flex-row justify-between">
                 <View className="items-center mt-2">
