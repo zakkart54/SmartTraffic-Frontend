@@ -25,7 +25,7 @@ export default function PasswordForgotPage() {
                 resizeMode="contain"
             />
             </TouchableOpacity>
-            <Text className={`text-3xl font-bold text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Quên mật khẩu</Text>
+            <Text className={`text-3xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Quên mật khẩu</Text>
         </View>
         
         <TextInputField

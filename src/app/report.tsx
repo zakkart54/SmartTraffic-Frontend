@@ -251,7 +251,7 @@ export default function ReportPage() {
       <View className="flex-1 bg-blue-900/90 px-4 pt-20 justify-between">
 
         <View className="mt-4 mb-2">
-        <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Gửi tình trạng</Text>
+        <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Gửi tình trạng</Text>
         </View>
 
         <View className="bg-blue-200 p-4 rounded-xl flex-row justify-between mb-4">

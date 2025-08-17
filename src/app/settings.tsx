@@ -65,7 +65,7 @@ export default function SettingsPage() {
           </TouchableOpacity>
           <Text
             className={`text-3xl font-bold text-center ${
-              theme === "dark" ? "text-white" : "text-black"
+              theme === "dark" ? "text-white" : "text-blue-900"
             }`}
           >
             Cài đặt
@@ -94,26 +94,26 @@ export default function SettingsPage() {
           secureTextEntry
           editable={false}
         />
-        
-        <View className="flex-row px-8 mb-6 mt-4">
-          <Text className={`mr-8 ${theme === "dark" ? "text-white" : "text-black"} font-semibold`}>
+
+        <View className="flex-row px-2 mb-2 mt-4">
+          <Text className={`mr-16 ${theme === "dark" ? "text-white" : "text-black"} font-bold`}>
             Giao diện
           </Text>
-        <TouchableOpacity
-          onPress={() => setTheme("light")}
-          className={`w-6 h-6 rounded-full mr-2 border-2 ${
-            theme === "light" ? "bg-blue-300 border-blue-400" : "border-gray-400"
-          }`}
-        />
-        <Text className={`mr-6 ${theme === "dark" ? "text-white" : "text-black"}`}>Light</Text>
-        <TouchableOpacity
-          onPress={() => setTheme("dark")}
-          className={`w-6 h-6 rounded-full mr-2 border-2 ${
-            theme === "dark" ? "bg-blue-800 border-blue-600" : "border-gray-400"
-          }`}
-        />
-        <Text className={`${theme === "dark" ? "text-white" : "text-black"}`}>Dark</Text>
-      </View>
+          <TouchableOpacity
+            onPress={() => setTheme("light")}
+            className={`w-6 h-6 rounded-full mr-2 border-2 ${
+              theme === "light" ? "bg-blue-300 border-blue-400" : "border-gray-400"
+            }`}
+          />
+          <Text className={`mr-16 ${theme === "dark" ? "text-white" : "text-black"}`}>Sáng</Text>
+          <TouchableOpacity
+            onPress={() => setTheme("dark")}
+            className={`w-6 h-6 rounded-full mr-2 border-2 ${
+              theme === "dark" ? "bg-blue-800 border-blue-600" : "border-gray-400"
+            }`}
+          />
+          <Text className={`${theme === "dark" ? "text-white" : "text-black"}`}>Tối</Text>
+        </View>
 
         <View className="flex-row justify-between mt-16">
             <View className="flex-1 mr-2">

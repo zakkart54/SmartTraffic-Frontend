@@ -61,10 +61,10 @@ export default function AboutPage() {
                 className="items-center justify-center px-8"
             >
                 <View className="mb-6">
-                <Text className="text-white text-4xl font-bold mb-4 text-center">
+                <Text className={`text-4xl font-bold mb-4 text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>
                     {page.title}
                 </Text>
-                <Text className="text-white text-xl text-center leading-relaxed">
+                <Text className={`text-xl text-center leading-relaxed ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>
                     {page.description}
                 </Text>
                 </View>

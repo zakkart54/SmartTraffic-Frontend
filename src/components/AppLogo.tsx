@@ -12,8 +12,8 @@ export default function AppLogo() {
         style={{ width: "30%", height: undefined, marginRight: -15, aspectRatio: 1 }}
       />
       <Text
-        className={`font-bold text-3xl ${
-          theme === "dark" ? "text-white" : "text-black"
+        className={`font-bold text-4xl ${
+          theme === "dark" ? "text-white" : "text-[#063970]"
         }`}
       >SmartTraffic</Text>
     </View>

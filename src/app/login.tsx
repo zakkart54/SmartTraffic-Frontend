@@ -58,7 +58,7 @@ export default function LoginPage() {
               resizeMode="contain"
             />
           </TouchableOpacity> */}
-          <Text className={`text-3xl font-bold text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Đăng nhập</Text>
+          <Text className={`text-3xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Đăng nhập</Text>
         </View>
         <View className="mt-4">
           <TextInputField

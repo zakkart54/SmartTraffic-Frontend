@@ -60,7 +60,7 @@ export default function RegisterPage() {
               resizeMode="contain"
             />
           </TouchableOpacity>
-          <Text className={`text-3xl font-bold text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Đăng ký</Text>
+          <Text className={`text-3xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Đăng ký</Text>
         </View>
 
         <TextInputField

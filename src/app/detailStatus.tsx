@@ -33,15 +33,15 @@ export default function DetailStatus() {
         <View className="flex-1 px-4 pt-20 justify-evenly">
           {/* Tình trạng */}
           <View className="mt-4">
-            <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Tình trạng</Text>
+            <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Tình trạng</Text>
             <View className="bg-[#edf2fc] p-4 rounded-xl mt-4 items-center">
-              <Text className="text-black-800 text-3xl font-bold">{statusData.time}</Text>
-              <Text className="text-black text-3xl mt-1">{statusData.name}</Text>
+              <Text className="text-[#063970] text-3xl font-bold">{statusData.time}</Text>
+              <Text className="text-[#063970] text-3xl mt-1">{statusData.name}</Text>
             </View>
           </View>
           <View className="mt-4">
             <View className="bg-[#edf2fc] p-4 rounded-xl mt-2 items-center">
-              <Text className="text-black text-3xl font-bold text-center">Độ tin cậy</Text>
+              <Text className="text-[#063970] text-3xl font-bold text-center">Độ tin cậy</Text>
               <Text
                 className={`text-5xl font-bold mt-2 ${
                   parseInt(statusData.reliability) >= 80
@@ -59,7 +59,7 @@ export default function DetailStatus() {
 
           {/* Chi tiết tình trạng */}
           <View className="mt-8">
-          <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Chi tiết tình trạng</Text>
+          <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Chi tiết tình trạng</Text>
             {/* <View className="bg-[#edf2fc] p-4 rounded-xl mt-2 items-center">
               <Image
                 source={statusData.image}
@@ -79,7 +79,7 @@ export default function DetailStatus() {
 
           {/* Mô tả tình trạng */}
           <View className="mt-8">
-          <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Mô tả tình trạng</Text>
+          <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Mô tả tình trạng</Text>
             <View className="bg-[#edf2fc] p-2 rounded-xl mt-2">
               <TextInput
                 value={statusData.description}
@@ -92,23 +92,23 @@ export default function DetailStatus() {
 
           {/* Vị trí phát hiện */}
           <View className="mt-8">
-          <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Vị trí phát hiện</Text>
+          <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Vị trí phát hiện</Text>
             <View className="bg-[#edf2fc] p-8 rounded-2xl mt-4">
               <View className="flex-row justify-between">
                 <View className="items-center mt-2">
-                  <Text className="text-black text-xl">Kinh độ</Text>
-                  <Text className="text-black text-3xl font-bold">{statusData.location.longitude}</Text>
-                  <Text className="text-black text-xl">{statusData.location.longitudeDir}</Text>
+                  <Text className="text-[#063970] text-xl">Kinh độ</Text>
+                  <Text className="text-[#063970] text-3xl font-bold">{statusData.location.longitude}</Text>
+                  <Text className="text-[#063970] text-xl">{statusData.location.longitudeDir}</Text>
                 </View>
 
                 <View className="items-center mt-2">
-                  <Text className="text-black text-xl">Vĩ độ</Text>
-                  <Text className="text-black text-3xl font-bold">{statusData.location.latitude}</Text>
-                  <Text className="text-black text-xl">{statusData.location.latitudeDir}</Text>
+                  <Text className="text-[#063970] text-xl">Vĩ độ</Text>
+                  <Text className="text-[#063970] text-3xl font-bold">{statusData.location.latitude}</Text>
+                  <Text className="text-[#063970] text-xl">{statusData.location.latitudeDir}</Text>
                 </View>
               </View>
               <View className="items-center mt-2">
-                <Text className="text-black text-2xl font-bold">{statusData.location.street}</Text>
+                <Text className="text-[#063970] text-2xl font-bold">{statusData.location.street}</Text>
               </View>
             </View>
           </View>

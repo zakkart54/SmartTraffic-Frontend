@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity, Modal, Pressable } from "react-native";
 import { router } from "expo-router";
+import AppLogo from "../components/AppLogo";
 import { useTheme } from "@/hooks/useTheme";
 
 interface Status {
@@ -47,7 +48,7 @@ export default function Header({ userName = "User", status = [], unreadCount = 0
   const openStatus = (status: Status) => {
     setNotifVisible(false);
     router.push({
-      pathname: "/detailStatus",
+      pathname: "/DetailStatus",
       params: { status: JSON.stringify(status) },
     });
   };
@@ -62,8 +63,11 @@ export default function Header({ userName = "User", status = [], unreadCount = 0
 
   return (
     <View className={theme === "dark" ? "bg-[#063970]" : "bg-[#b6d2fe]"}>
-      <View className="flex-row items-center justify-between bg-[#edf2fc] px-4 py-5 rounded-2xl mt-10">
-        <Text className="text-black text-xl font-semibold">Xin chào, {userName}</Text>
+      <View className="mt-16">
+          <AppLogo />
+        </View>
+      <View className="flex-row items-center justify-between bg-[#edf2fc] px-4 py-5 rounded-2xl mt-4">
+        <Text className="text-[#063970] text-xl font-semibold">Xin chào, {userName}</Text>
 
         <View className="flex-row items-center space-x-4">
           {/* Bell */}
@@ -97,7 +101,7 @@ export default function Header({ userName = "User", status = [], unreadCount = 0
           >
             <Pressable
               onPress={() => setMenuVisible(false)}
-              className="flex-1 justify-start items-end pt-16 bg-transparent"
+              className="flex-1 justify-start items-end pt-40 bg-transparent"
             >
               <View className="bg-white rounded-md shadow-lg p-2 w-40 mt-2">
                 <TouchableOpacity onPress={handleViewInfo} className="py-2">
@@ -121,7 +125,7 @@ export default function Header({ userName = "User", status = [], unreadCount = 0
           >
             <Pressable
               onPress={() => setNotifVisible(false)}
-              className="flex-1 justify-start items-end pt-16 bg-transparent"
+              className="flex-1 justify-start items-end pt-40 bg-transparent"
             >
               <View className="bg-white rounded-md shadow-lg p-2 w-72 mr-2 mt-2">
               <Text className="text-black font-semibold px-2 pb-2">Thông báo</Text>

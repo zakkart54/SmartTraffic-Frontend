@@ -88,30 +88,30 @@ export default function HomePage() {
       <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
         <View className="flex-1 px-4 pt-4 justify-evenly">
           <View className="mt-20">
-            <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Vị trí hiện tại</Text>
+            <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Vị trí hiện tại</Text>
 
             <View className="bg-[#edf2fc] p-8 rounded-2xl mt-4">
               <View className="flex-row justify-between">
                 <View className="items-center mt-2">
-                  <Text className="text-black text-xl">Kinh độ</Text>
-                  <Text className="text-black text-3xl font-bold">{trafficData.location.longitude}</Text>
-                  <Text className="text-black text-xl">{trafficData.location.longitudeDir}</Text>
+                  <Text className="text-[#063970] text-xl">Kinh độ</Text>
+                  <Text className="text-[#063970] text-3xl font-bold">{trafficData.location.longitude}</Text>
+                  <Text className="text-[#063970] text-xl">{trafficData.location.longitudeDir}</Text>
                 </View>
 
                 <View className="items-center mt-2">
-                  <Text className="text-black text-xl">Vĩ độ</Text>
-                  <Text className="text-black text-3xl font-bold">{trafficData.location.latitude}</Text>
-                  <Text className="text-black text-xl">{trafficData.location.latitudeDir}</Text>
+                  <Text className="text-[#063970] text-xl">Vĩ độ</Text>
+                  <Text className="text-[#063970] text-3xl font-bold">{trafficData.location.latitude}</Text>
+                  <Text className="text-[#063970] text-xl">{trafficData.location.latitudeDir}</Text>
                 </View>
               </View>
               <View className="items-center mt-2">
-                <Text className="text-black text-2xl font-bold">{trafficData.location.street}</Text>
+                <Text className="text-[#063970] text-2xl font-bold">{trafficData.location.street}</Text>
               </View>
             </View>
           </View>
 
           <View className="mt-20">
-            <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-black"}`}>
+            <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>
               Tình trạng giao thông
             </Text>
             {trafficData.status.map((item, index) => (
@@ -119,13 +119,13 @@ export default function HomePage() {
                 key={index}
                 onPress={() =>
                   router.push({
-                    pathname: '/detailStatus',
+                    pathname: '/DetailStatus',
                     params: { status: JSON.stringify(item) },
                   })
                 }
               >
                 <View className="bg-[#edf2fc] mb-2 p-6 rounded-xl mt-4">
-                  <Text className="text-black text-2xl font-bold">
+                  <Text className="text-[#063970] text-2xl font-bold">
                     {item.name} {'-'} {item.time}
                     {/* <Text
                       className={

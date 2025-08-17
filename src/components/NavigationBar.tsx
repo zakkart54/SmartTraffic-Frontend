@@ -3,19 +3,50 @@ import { View, TouchableOpacity, Text, Image } from "react-native";
 import { router, usePathname } from "expo-router";
 import { useTheme } from "@/hooks/useTheme";
 
-const tabs = [
-  { label: "Trang chủ", path: "/", icon: require("@/asset/icons/home.png") },
-  { label: "Bản đồ", path: "/map", icon: require("@/asset/icons/map.png") },
-  { label: "Gửi tình trạng", path: "/report", icon: require("@/asset/icons/report.png") },
-  { label: "Gợi ý", path: "/suggest", icon: require("@/asset/icons/suggest.png") },
-];
+// const tabs = [
+//   { label: "Trang chủ", path: "/", icon: require("@/asset/icons/home.png") },
+//   { label: "Bản đồ", path: "/map", icon: require("@/asset/icons/map.png") },
+//   { label: "Gửi tình trạng", path: "/report", icon: require("@/asset/icons/report.png") },
+//   { label: "Gợi ý", path: "/suggest", icon: require("@/asset/icons/suggest.png") },
+// ];
 
 export default function NavigationBar() {
   const pathname = usePathname();
 
   const { theme } = useTheme();
 
-  const activeBg = theme === "dark" ? "bg-blue-900" : "bg-blue-500";
+  const tabs = [
+    { 
+      label: "Trang chủ", 
+      path: "/", 
+      icon: theme === "dark" 
+        ? require("@/asset/icons/home.png") 
+        : require("@/asset/icons/home1.png") 
+    },
+    { 
+      label: "Bản đồ", 
+      path: "/map", 
+      icon: theme === "dark" 
+        ? require("@/asset/icons/map.png") 
+        : require("@/asset/icons/map1.png") 
+    },
+    { 
+      label: "Gửi tình trạng", 
+      path: "/report", 
+      icon: theme === "dark" 
+        ? require("@/asset/icons/report.png") 
+        : require("@/asset/icons/report1.png") 
+    },
+    { 
+      label: "Gợi ý", 
+      path: "/suggest", 
+      icon: theme === "dark" 
+        ? require("@/asset/icons/suggest.png") 
+        : require("@/asset/icons/suggest1.png") 
+    },
+  ];
+
+  const activeBg = theme === "dark" ? "bg-blue-800" : "bg-blue-400";
   const inactiveBg = "bg-transparent";
   const activeText = theme === "dark" ? "text-white" : "text-black";
   const inactiveText = theme === "dark" ? "text-blue-300" : "text-gray-700";
