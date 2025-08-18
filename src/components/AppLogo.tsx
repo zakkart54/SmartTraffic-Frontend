@@ -1,7 +1,9 @@
 import React from "react";
 import { View, Text, Image } from "react-native";
+import { useTheme } from "@/hooks/useTheme";
 
 export default function AppLogo() {
+  const { theme } = useTheme();
   return (
     <View className="h-16 flex-row items-center justify-center">
       <Image
@@ -9,7 +11,11 @@ export default function AppLogo() {
         resizeMode="contain"
         style={{ width: "30%", height: undefined, marginRight: -15, aspectRatio: 1 }}
       />
-      <Text className="text-white font-bold text-3xl">SmartTraffic</Text>
+      <Text
+        className={`font-bold text-4xl ${
+          theme === "dark" ? "text-white" : "text-[#063970]"
+        }`}
+      >SmartTraffic</Text>
     </View>
   );
 }

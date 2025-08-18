@@ -5,6 +5,7 @@ import PrimaryButton from "../components/PrimaryButton";
 import AppLogo from "../components/AppLogo";
 import { router } from "expo-router";
 import { useAuth } from "../hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -40,15 +41,24 @@ export default function LoginPage() {
     }
   };
 
+  const { theme } = useTheme();
+
   return (
-    <View className="flex-1 bg-[#05416C] p-8">
+    <View className={`flex-1 p-8 ${theme === "dark" ? "bg-[#05416C]" : "bg-[#b6d2fe]"}`}>
       <View className="mt-16">
         <AppLogo/>
       </View>
 
       <View className="flex-1 justify-evenly">
         <View className="relative items-center mb-6 h-10 justify-center">
-          <Text className="text-3xl text-white font-bold text-center">Đăng nhập</Text>
+          {/* <TouchableOpacity onPress={() => router.back()} className="absolute left-0">
+            <Image
+              source={require("../asset/icons/back.png")}
+              className="h-6 w-6 tint-white"
+              resizeMode="contain"
+            />
+          </TouchableOpacity> */}
+          <Text className={`text-3xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Đăng nhập</Text>
         </View>
         <View className="mt-4">
           <TextInputField
@@ -81,10 +91,10 @@ export default function LoginPage() {
         <PrimaryButton title="Đăng nhập" disabled={isLoading} onPress={handleLogin} />
         <View>
           <TouchableOpacity onPress={() => router.push("/register")}> 
-          <Text className="text-white text-center mt-4">Chưa có tài khoản? Đăng ký</Text>
+          <Text className={`text-center mt-4 ${theme === "dark" ? "text-white" : "text-black"}`}>Chưa có tài khoản? Đăng ký</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => router.push("/ForgotPassword")}> 
-          <Text className="text-white text-center mt-4">Quên mật khẩu?</Text>
+          <Text className={`text-center mt-4 ${theme === "dark" ? "text-white" : "text-black"}`}>Quên mật khẩu?</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => router.push("/")}> 
           <Text className="text-white text-center mt-4">Bỏ qua</Text>

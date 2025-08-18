@@ -5,6 +5,7 @@ import PrimaryButton from "../components/PrimaryButton";
 import AppLogo from "../components/AppLogo";
 import { router } from "expo-router";
 import { useUser } from "../hooks/useUser";
+import { useTheme } from "@/hooks/useTheme";
 // import { format } from "date-fns";
 
 export default function RegisterPage() {
@@ -43,8 +44,10 @@ export default function RegisterPage() {
     }
   };
 
+  const { theme } = useTheme();
+
   return (
-    <View className="flex-1 bg-[#05416C] p-8">
+    <View className={`flex-1 p-8 ${theme === "dark" ? "bg-[#05416C]" : "bg-[#b6d2fe]"}`}>
       <View className="mt-16">
         <AppLogo />
       </View>
@@ -57,7 +60,7 @@ export default function RegisterPage() {
               resizeMode="contain"
             />
           </TouchableOpacity>
-          <Text className="text-3xl text-white font-bold text-center">Đăng ký</Text>
+          <Text className={`text-3xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Đăng ký</Text>
         </View>
 
         <TextInputField
@@ -96,7 +99,7 @@ export default function RegisterPage() {
         <PrimaryButton title="Tạo tài khoản" onPress={handleRegister} disabled={isLoading} />
 
         <TouchableOpacity onPress={() => router.replace("/login")}>
-          <Text className="text-white text-center mt-4">Đã có tài khoản? Đăng nhập</Text>
+          <Text className={`text-center mt-4 ${theme === "dark" ? "text-white" : "text-black"}`}>Đã có tài khoản? Đăng nhập</Text>
         </TouchableOpacity>
       </View>
     </View>

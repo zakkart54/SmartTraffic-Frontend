@@ -3,6 +3,7 @@ import { View, Text, Image, ScrollView, ImageBackground, ActivityIndicator } fro
 import NavigationBar from '@/components/NavigationBar';
 import Header from '@/components/Header';
 import { useImage } from '@/hooks/useImage';
+import { useTheme } from "@/hooks/useTheme";
 
 const SubmittedReport = () => {
   const { getImagesByUploaderId, isLoading } = useImage();
@@ -44,21 +45,27 @@ const SubmittedReport = () => {
     });
   };
 
+  const { theme } = useTheme();
+
   return (
     <ImageBackground
-      source={require('@/asset/background.png')}
+      source={
+        theme === "dark"
+          ? require("@/asset/background.png")
+          : require("@/asset/background1.png")
+      }
       resizeMode="cover"
-      style={{ flex: 1, width: '100%', height: '100%' }}
+      style={{ flex: 1, width: "100%", height: "100%" }}
     >
       <Header />
 
       <ScrollView className="flex-1 px-4 pt-4">
-        <Text className="text-white text-2xl font-bold text-center mb-4">Thông tin đã gửi</Text>
+        <Text className={`text-2xl font-bold text-center mb-4 ${theme === "dark" ? "text-white" : "text-black"}`}>Thông tin đã gửi</Text>
 
         {isLoading ? (
           <ActivityIndicator size="large" color="#ffffff" />
         ) : images.length === 0 ? (
-          <Text className="text-white text-center">Chưa có ảnh nào được gửi.</Text>
+          <Text className={`text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Chưa có ảnh nào được gửi.</Text>
         ) : (
           images.map((img, index) => (
             <View key={index} className="bg-white p-4 rounded-2xl shadow-md mb-4">

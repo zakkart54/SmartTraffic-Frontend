@@ -28,6 +28,7 @@ import PrimaryButton from '@/components/PrimaryButton';
 import { useData } from '@/hooks/useData';
 import { useImage } from '@/hooks/useImage';
 import { format } from "date-fns";
+import { useTheme } from "@/hooks/useTheme";
 
 const types = [
   { key: 'image', label: 'Hình ảnh', icon: require('@/asset/icons/image.png') },
@@ -39,6 +40,8 @@ const types = [
 type TypeKey = typeof types[number]['key'];
 
 export default function ReportPage() {
+  const { theme } = useTheme();
+
   const [selectedType, setSelectedType] = useState<TypeKey>('image');
   const [dataUri, setDataUri] = useState<string | null>(null);
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
@@ -218,7 +221,11 @@ export default function ReportPage() {
   
   return (
     <ImageBackground
-      source={require('@/asset/background.png')}
+      source={
+        theme === "dark"
+          ? require("@/asset/background.png")
+          : require("@/asset/background1.png")
+      }
       resizeMode="cover"
       style={{ flex: 1 }}
     >
@@ -226,8 +233,8 @@ export default function ReportPage() {
 
       <View className="flex-1 bg-blue-900/90 px-4 pt-10 justify-between">
 
-        <View className="mb-2">
-          <Text className="text-white text-4xl font-bold text-center">Gửi tình trạng giao thông</Text>
+        <View className="mt-4 mb-2">
+        <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Gửi tình trạng</Text>
         </View>
 
         <View className="bg-blue-200 p-4 rounded-xl flex-row justify-between mb-4">

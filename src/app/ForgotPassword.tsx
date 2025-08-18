@@ -4,12 +4,15 @@ import TextInputField from "../components/TextInputField";
 import PrimaryButton from "../components/PrimaryButton";
 import AppLogo from "../components/AppLogo";
 import { router } from "expo-router";
+import { useTheme } from "@/hooks/useTheme";
 
 export default function PasswordForgotPage() {
   const [email, setEmail] = useState("");
 
+  const { theme } = useTheme();
+
   return (
-    <View className="flex-1 bg-[#05416C] p-8">
+    <View className={`flex-1 p-8 ${theme === "dark" ? "bg-[#05416C]" : "bg-[#b6d2fe]"}`}>
       <View className="mt-16">
         <AppLogo/>
       </View>
@@ -22,7 +25,7 @@ export default function PasswordForgotPage() {
                 resizeMode="contain"
             />
             </TouchableOpacity>
-            <Text className="text-3xl text-white font-bold text-center">Quên mật khẩu</Text>
+            <Text className={`text-3xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Quên mật khẩu</Text>
         </View>
         
         <TextInputField
