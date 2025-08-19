@@ -2,48 +2,48 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Image, ScrollView, ImageBackground, ActivityIndicator } from 'react-native';
 import NavigationBar from '@/components/NavigationBar';
 import Header from '@/components/Header';
-import { useImage } from '@/hooks/useImage';
+import { useData } from '@/hooks/useData';
 import { useTheme } from "@/hooks/useTheme";
 
 const SubmittedReport = () => {
-  const { getImagesByUploaderId, isLoading } = useImage();
-  const [images, setImages] = useState([]);
+  const { getDataByUploaderId, isLoading } = useData();
+  const [data, setData] = useState([]);
 
   useEffect(() => {
-    const fetchImages = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getImagesByUploaderId();
+        const res = await getDataByUploaderId();
+        setData(res as any);
 
-        // Convert image blobs to base64
-        const base64Images = await Promise.all(
-          data.map(async (img) => {
-            if (!img.imageBlob) return { ...img, base64: null };
+        // const base64Images = await Promise.all(
+        //   data.map(async (img) => {
+        //     if (!img.imageBlob) return { ...img, base64: null };
 
-            const base64 = await blobToBase64(img.imageBlob);
-            return { ...img, base64 };
-          })
-        );
+        //     const base64 = await blobToBase64(img.imageBlob);
+        //     return { ...img, base64 };
+        //   })
+        // );
 
-        console.log('Fetched submitted images with base64:', base64Images);
-        setImages(base64Images);
+        // console.log('Fetched submitted images with base64:', base64Images);
+        // setImages(base64Images);
       } catch (error) {
         console.error('Error fetching submitted images:', error);
       }
     };
 
-    fetchImages();
+    fetchData();
   }, []);
 
-  const blobToBase64 = (blob) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        resolve(reader.result); // base64 URI
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  };
+  // const blobToBase64 = (blob) => {
+  //   return new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       resolve(reader.result); // base64 URI
+  //     };
+  //     reader.onerror = reject;
+  //     reader.readAsDataURL(blob);
+  //   });
+  // };
 
   const { theme } = useTheme();
 
@@ -63,6 +63,35 @@ const SubmittedReport = () => {
         <Text className={`text-2xl font-bold text-center mb-4 ${theme === "dark" ? "text-white" : "text-black"}`}>Thông tin đã gửi</Text>
 
         {isLoading ? (
+          <ActivityIndicator size="large" color="#ffffff" />
+        ) : data.length === 0 ? (
+          <Text className={`text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Chưa có thông tin nào được gửi.</Text>
+        ) : (
+          data.map((tmp, index) => (
+            <View key={index} className="bg-white p-4 rounded-2xl shadow-md mb-4">
+              <Text className="text-lg font-semibold text-black mb-2">Loại thông tin đã gửi:</Text>
+              <Text className="text-black">{tmp.type=='image' ? 'Hình ảnh': tmp.type=='video' ? 'Video' : tmp.type== 'text' ? 'Văn bản' : 'Giọng nói'}</Text>
+
+              {tmp.uploadTime ? (
+                <>
+                  <Text className="text-lg font-semibold text-black mt-4">Thời gian gửi:</Text>
+                  <Text className="text-base text-black">
+                    {new Date(tmp.uploadTime).toLocaleString('vi-VN')}
+                  </Text>
+                </>
+              ) : null}
+
+              {tmp.location ? (
+                <>
+                  <Text className="text-lg font-semibold text-black mt-4">Vị trí:</Text>
+                  <Text className="text-base text-black">{tmp.location}</Text>
+                </>
+              ) : null}
+            </View>
+          ))
+        )}
+
+        {/* {isLoading ? (
           <ActivityIndicator size="large" color="#ffffff" />
         ) : images.length === 0 ? (
           <Text className={`text-center ${theme === "dark" ? "text-white" : "text-black"}`}>Chưa có ảnh nào được gửi.</Text>
@@ -97,7 +126,7 @@ const SubmittedReport = () => {
               ) : null}
             </View>
           ))
-        )}
+        )} */}
       </ScrollView>
 
       <NavigationBar />

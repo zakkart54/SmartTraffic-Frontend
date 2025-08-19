@@ -120,7 +120,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     refresh,
   };
 
-  return <AuthContext.Provider value={value}> {children} </AuthContext.Provider>;
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 /** -- Hook cho component ---------------------------------------------- */

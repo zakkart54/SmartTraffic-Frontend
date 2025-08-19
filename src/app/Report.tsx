@@ -26,9 +26,10 @@ import Header from '@/components/Header';
 import NavigationBar from '@/components/NavigationBar';
 import PrimaryButton from '@/components/PrimaryButton';
 import { useData } from '@/hooks/useData';
-import { useImage } from '@/hooks/useImage';
-import { format } from "date-fns";
+// import { useImage } from '@/hooks/useImage';
+// import { format } from "date-fns";
 import { useTheme } from "@/hooks/useTheme";
+import {useAuth} from "../hooks/useAuth";
 
 const types = [
   { key: 'image', label: 'Hình ảnh', icon: require('@/asset/icons/image.png') },
@@ -41,7 +42,7 @@ type TypeKey = typeof types[number]['key'];
 
 export default function ReportPage() {
   const { theme } = useTheme();
-
+  const { accessToken } = useAuth();
   const [selectedType, setSelectedType] = useState<TypeKey>('image');
   const [dataUri, setDataUri] = useState<string | null>(null);
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
@@ -51,16 +52,12 @@ export default function ReportPage() {
   const player = useAudioPlayer({ uri: dataUri || '' });
   // const [isFetchingLocation, setIsFetchingLocation] = useState(false);
 
-  const { addImageData } = useData();
-  const { addImage, isLoading} = useImage();
-
-  const clearMedia = useCallback(() => {
-    setDataUri('');
-  }, []);
+  const { addImageData, addTextData, isLoading } = useData();
+  // const { addImage, isLoading} = useImage();
 
   useEffect(() => {
-    clearMedia();
-  }, [selectedType, clearMedia]);
+    setDataUri('');
+  }, [selectedType]);
 
   const fetchGPS = async () => {
     try {
@@ -172,47 +169,34 @@ export default function ReportPage() {
     }
   };
 
-  const handleSubmit = async () => {
-    const valid = selectedType === 'image' && dataUri;
-  
-    if (!valid) {
-      Alert.alert('Lỗi', 'Vui lòng chọn hình ảnh và điền thông tin.');
+  const handleSubmit = async () => {  
+    if (!accessToken){
+      Alert.alert('Thông báo','Vui lòng đăng nhập để gửi tình trạng.');
+      return;
+    }
+
+    if (!dataUri) {
+      Alert.alert('Lỗi', 'Vui lòng điền thông tin.');
       return;
     }
   
     try {
-      // await addImageData();
-      const formData = new FormData();
-      const fileName = dataUri!.split('/').pop()!;
-      // const file: File | Blob = {
-      //   uri: dataUri!,
-      //   name: fileName,
-      //   type: 'image/jpeg',
-      // } as any;
-      // await addImageData({
-      //   type: 'image',
-      //   uploadTime: format(new Date(), 'yyyy/MM/dd'),
-      //   location
-      // }, file);
-
-      formData.append('fileUpload', {
-        uri: dataUri!,
-        name: fileName,
-        type: 'image/jpeg',
-      } as any);
-
-      formData.append('dataID', '68983c97af72c3f8a22bdac7');
-      formData.append('type', 'image');
-      formData.append('uploadTime', format(new Date(), 'yyyy/MM/dd'));
-      formData.append('location', location);
-
-      await addImage(formData);
+      if (selectedType=='image') {
+          await addImageData(dataUri);
+          Alert.alert('Thành công', 'Hình ảnh đã được gửi.');
+      }
+      else if (selectedType === 'video') {
+      }
+      else if (selectedType === 'audio') {
+      }
+      else if (selectedType === 'text') {
+        await addTextData(dataUri);
+        Alert.alert('Thành công', 'Văn bản đã được gửi.');
+      }
   
-      Alert.alert('Thành công', 'Hình ảnh đã được gửi.');
-      clearMedia();
+      setDataUri('');
       setDescription('');
       setLocation('');
-      setDataUri('');
     } catch (err: any) {
       console.error(err);
       Alert.alert('Lỗi', err.message || 'Không thể gửi hình ảnh.');
@@ -229,15 +213,15 @@ export default function ReportPage() {
       resizeMode="cover"
       style={{ flex: 1 }}
     >
-      <Header />
+      <Header hideMenu={true}/>
 
-      <View className="flex-1 bg-blue-900/90 px-4 pt-10 justify-between">
+      <View className="flex-1 px-4 pt-8 mt-4 justify-between">
 
         <View className="mt-4 mb-2">
         <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Gửi tình trạng</Text>
         </View>
 
-        <View className="bg-blue-200 p-4 rounded-xl flex-row justify-between mb-4">
+        <View className="bg-blue-300 p-4 rounded-xl flex-row justify-between mb-4">
           {types.map((item) => (
             <TouchableOpacity
               key={item.key}
@@ -258,7 +242,7 @@ export default function ReportPage() {
               {dataUri ? (
                 <Image
                   source={{ uri: dataUri }}
-                  className="w-24 h-24 rounded-lg mb-2"
+                  className="w-48 h-48 rounded-lg mb-2"
                   resizeMode="cover"
                 />
               ) : (

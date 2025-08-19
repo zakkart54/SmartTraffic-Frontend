@@ -25,21 +25,21 @@ export default function NavigationBar() {
     },
     { 
       label: "Bản đồ", 
-      path: "/map", 
+      path: "/Map", 
       icon: theme === "dark" 
         ? require("@/asset/icons/map.png") 
         : require("@/asset/icons/map1.png") 
     },
     { 
       label: "Gửi tình trạng", 
-      path: "/report", 
+      path: "/Report", 
       icon: theme === "dark" 
         ? require("@/asset/icons/report.png") 
         : require("@/asset/icons/report1.png") 
     },
     { 
       label: "Gợi ý", 
-      path: "/suggest", 
+      path: "/Suggest", 
       icon: theme === "dark" 
         ? require("@/asset/icons/suggest.png") 
         : require("@/asset/icons/suggest1.png") 
@@ -57,7 +57,7 @@ export default function NavigationBar() {
     <View
       className={`flex-row justify-around ${
         theme === "dark" ? "bg-[#063970]" : "bg-[#b6d2fe]"
-      } py-2 border-t ${theme === "dark" ? "border-blue-800" : "border-gray-400"}`}
+      } border-t ${theme === "dark" ? "border-blue-800" : "border-gray-400"}`}
     >
       {tabs.map(({ label, path, icon }) => {
         const active = pathname === path;
@@ -71,7 +71,7 @@ export default function NavigationBar() {
           >
             <Image
               source={icon}
-              className={active ? activeTint : inactiveTint}
+              // className={active ? activeTint : inactiveTint}
               resizeMode="contain"
               style={{ width: "50%", height: undefined, aspectRatio: 1 }}
             />

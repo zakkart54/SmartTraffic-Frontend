@@ -57,8 +57,8 @@ export const useData = () => {
 
   const getAllData = useCallback(() => request<DataEntry[]>(`${base}/`), [request]);
 
-  const getDataById = useCallback((id: string) =>
-    request<DataEntry>(`${base}/${id}`),
+  const getDataByUploaderId = useCallback(() =>
+    request<DataEntry>(`${base}/dataByUploader`),
   [request]);
 
   const addData = useCallback((data: DataEntry) =>
@@ -87,37 +87,66 @@ export const useData = () => {
     }),
   [request]);
 
+  // const addImageData = useCallback(
+  //   async (data?: DataEntry) => {
+  //     setIsLoading(true);
+  //     setError(null);
+  //     try {
+  //       // const payload = {
+  //       //   segmentID: data.segmentID ,
+  //       //   dataID: data.dataID,
+  //       //   type: data.type,
+  //       //   uploadTime: data.uploadTime,
+  //       //   InfoID: data.InfoID,
+  //       //   location: data.location,
+  //       //   processed: data.processed,
+  //       // };
+
+  //       const payload = {
+  //         segmentID: '64d9f1a37c8a4f2e8f0c3b1b'  ,
+  //         uploaderID: '64d9f1a37c8a4f2e8f0c3b1c',
+  //         type: 'image',
+  //         uploadTime: "2025/07/12",
+  //         InfoID: "64d9f1a37c8a4f2e8f0c3b1c",
+  //         location: "hehe",
+  //         processed: false,
+  //         processed_time: null,
+  //         TrainValTest: null
+  //       };
+  
+  //       return request<DataEntry>(`${base}/`, {
+  //         method: 'POST',
+  //         headers: { 'Content-Type': 'application/json' },
+  //         body: JSON.stringify(payload),
+  //       });
+  //     } catch (err: any) {
+  //       setError(err.message);
+  //       throw err;
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   },
+  //   [accessToken],
+  // );
+  
+
   const addImageData = useCallback(
-    async (data?: DataEntry) => {
+    async (fileUri: string) => {
       setIsLoading(true);
       setError(null);
       try {
-        // const payload = {
-        //   segmentID: data.segmentID ,
-        //   dataID: data.dataID,
-        //   type: data.type,
-        //   uploadTime: data.uploadTime,
-        //   InfoID: data.InfoID,
-        //   location: data.location,
-        //   processed: data.processed,
-        // };
-
-        const payload = {
-          segmentID: '64d9f1a37c8a4f2e8f0c3b1b'  ,
-          uploaderID: '64d9f1a37c8a4f2e8f0c3b1c',
-          type: 'image',
-          uploadTime: "2025/07/12",
-          InfoID: "64d9f1a37c8a4f2e8f0c3b1c",
-          location: "hehe",
-          processed: false,
-          processed_time: null,
-          TrainValTest: null
-        };
-  
-        return request<DataEntry>(`${base}/`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+        const filename = fileUri.split('/').pop() || 'file';
+        const type = 'image/jpeg'
+        const formData = new FormData();
+        formData.append('fileUpload', {
+          uri: fileUri,
+          name: filename,
+          type,
+        } as any);
+        return request<DataEntry>(`${base}/img`, {
+          method: "POST",
+          body: formData,
+          headers: { 'Content-Type': 'multipart/form-data' },
         });
       } catch (err: any) {
         setError(err.message);
@@ -126,58 +155,48 @@ export const useData = () => {
         setIsLoading(false);
       }
     },
-    [accessToken],
+    [accessToken]
   );
+
+const addTextData = useCallback(
+  async (content: string) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      if (!content) throw new Error('Missing content');
+
+      const payload = {
+        content,
+      };
+
+      return request<DataEntry>(`${base}/text`, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+    } catch (err: any) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  },
+  [accessToken]
+);
+
   
-
-  // const addImageData = useCallback(
-  //   async (data: DataEntry, image: File | Blob) => {
-  //     setIsLoading(true);
-  //     setError(null);
-  //     try {
-  //       const form = new FormData();
-  //       form.append('fileUpload', image);
-  //       form.append('username', username ?? '');
-  //       form.append('type', data.type);
-  //       form.append('uploadTime', data.uploadTime);
-  //       if (data.InfoID) form.append('InfoID', data.InfoID);
-  //       if (data.location) form.append('location', data.location);
-  //       if (data.processed !== undefined) {
-  //         form.append('processed', String(data.processed));
-  //       }
-
-  //       const res = await fetch(`${base}/data-image`, {
-  //         method: 'POST',
-  //         headers: {
-  //           ...(accessToken ? { Authorization: accessToken } : {}),
-  //         },
-  //         body: form,
-  //       });
-
-  //       const json = await res.json().catch(() => ({}));
-  //       if (!res.ok) {
-  //         throw new Error(json.error || res.statusText);
-  //       }
-
-  //       return json;
-  //     } catch (err: any) {
-  //       setError(err.message);
-  //       throw err;
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   },
-  //   [accessToken, username],
-  // );
 
   return {
     isLoading,
     error,
     getAllData,
-    getDataById,
+    getDataByUploaderId,
     addData,
     updateData,
     deleteData,
-    addImageData
+    addImageData,
+    addTextData
   };
 };
