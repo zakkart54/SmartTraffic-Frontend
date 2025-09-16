@@ -1,37 +1,50 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity, Modal, Pressable } from "react-native";
 import { router } from "expo-router";
 import AppLogo from "../components/AppLogo";
 import { useTheme } from "@/hooks/useTheme";
 import {useAuth} from "../hooks/useAuth";
-
-interface Status {
-  name: string;
-  time: string;
-  reliability: string;
-  text?: string;
-  description?: string;
-  location: {
-    longitude: string;
-    latitude: string;
-    longitudeDir: string;
-    latitudeDir: string;
-    street: string;
-  };
-}
+import NotificationDropdown from "../components/NotificationDropdown";
+import { useNotification } from "@/hooks/useNotification";
+import { Notification } from "../hooks/useNotification";
 
 interface Props {
   userName?: string;
-  status?: Status[];
-  unreadCount?: number;
+  status?: any[];
   hideMenu?: boolean;
 }
 
-export default function Header({ userName = "User", status = [], unreadCount = 0, hideMenu= false }: Props) {
+export default function Header({ userName = "User", status = [], hideMenu= false }: Props) {
   const { accessToken, logout } = useAuth();
   userName = userName || "User";
   const [menuVisible, setMenuVisible] = useState(false);
   const [notifVisible, setNotifVisible] = useState(false);
+  const {getNotificationByUser, processNotifications, markNotificationsAsRead} = useNotification();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [hasUnread, setHasUnread] = useState(false);
+
+  useEffect(() => {
+    if (!accessToken) return;
+    const fetchNotifications = async () => {
+      try {
+        const data = await getNotificationByUser();
+        const {hasUnread, notifications} = await processNotifications(data[0] as any);
+        setNotifications(notifications);
+        setHasUnread(hasUnread);
+      } catch (err) {
+        console.error("Failed to fetch notifications:", err);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
+
+  const handleOpenNotificationMenu = () => {
+    setNotifVisible(true);
+    if (hasUnread) {
+      markNotificationsAsRead(notifications).then(() => setHasUnread(false));
+    }
+  }
   
   const handleLogout = async () => {
     setMenuVisible(false);
@@ -54,7 +67,7 @@ export default function Header({ userName = "User", status = [], unreadCount = 0
     router.push("/Settings");
   };
 
-  const openStatus = (status: Status) => {
+  const openStatus = (status) => {
     setNotifVisible(false);
     router.push({
       pathname: "/DetailStatus",
@@ -81,17 +94,15 @@ export default function Header({ userName = "User", status = [], unreadCount = 0
           <Text className="text-[#063970] text-xl font-semibold">Xin chào, {userName}</Text>
           <View className="flex-row items-center space-x-4">
             {/* Bell */}
-            <TouchableOpacity onPress={() => setNotifVisible(true)} className="relative mr-4">
+            <TouchableOpacity onPress={() => handleOpenNotificationMenu()} className="relative mr-4">
               <Image
                 source={require("../asset/icons/bell.png")}
                 className="h-7 w-7 tint-white"
                 resizeMode="contain"
               />
-              {unreadCount > 0 && (
-                <View className="absolute -top-1 -right-1 bg-red-600 w-4 h-4 rounded-full items-center justify-center">
-                  <Text className="text-white text-[10px] font-bold">{unreadCount}</Text>
-                </View>
-              )}
+                {hasUnread && (
+                  <View className="absolute -top-1 -right-1 bg-red-600 w-3 h-3 rounded-full" />
+                )}
             </TouchableOpacity>
           
             {/* Menu */}
@@ -111,9 +122,9 @@ export default function Header({ userName = "User", status = [], unreadCount = 0
             >
               <Pressable
                 onPress={() => setMenuVisible(false)}
-                className="flex-1 justify-start items-end pt-40 bg-transparent"
+                className="flex-1 justify-start items-end pt-40 mt-4 bg-transparent"
               >
-                <View className="bg-white rounded-md shadow-lg p-2 w-40 mt-2">
+                <View className="bg-white rounded-md shadow-lg p-2 mr-2 w-40 mt-2">
                   <TouchableOpacity onPress={handleViewInfo} className="py-2">
                     <Text className="text-black">Xem thông tin</Text>
                   </TouchableOpacity>
@@ -134,43 +145,12 @@ export default function Header({ userName = "User", status = [], unreadCount = 0
               </Pressable>
             </Modal>
 
-            <Modal
-              transparent
-              animationType="fade"
+            <NotificationDropdown
               visible={notifVisible}
-              onRequestClose={() => setNotifVisible(false)}
-            >
-              <Pressable
-                onPress={() => setNotifVisible(false)}
-                className="flex-1 justify-start items-end pt-40 bg-transparent"
-              >
-                <View className="bg-white rounded-md shadow-lg p-2 w-72 mr-2 mt-2">
-                <Text className="text-black font-semibold px-2 pb-2">Thông báo</Text>
-
-                  {status.length === 0 ? (
-                    <Text className="text-gray-500 px-2 py-2">Không có tình trạng mới</Text>
-                  ) : (
-                    status.map((s, idx) => (
-                      <TouchableOpacity
-                        key={idx}
-                        className="py-2 px-2 border-b border-gray-200"
-                        onPress={() => openStatus(s)}
-                      >
-                        <Text className="text-black font-medium">{s.name} • {s.time}</Text>
-                        <Text className={`text-xs font-semibold ${reliabilityClass(s.reliability)}`}>
-                          {s.reliability}
-                        </Text>
-                        {s.text ? (
-                          <Text numberOfLines={1} className="text-gray-500 text-xs mt-1">
-                            {s.text}
-                          </Text>
-                        ) : null}
-                      </TouchableOpacity>
-                    ))
-                  )}
-                </View>
-              </Pressable>
-            </Modal>
+              onClose={() => setNotifVisible(false)}
+              notifications={notifications}
+              onOpenStatus={openStatus}
+            />
           </View>
         </View>)}
     </View>

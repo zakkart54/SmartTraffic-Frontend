@@ -36,7 +36,7 @@ export default function PasswordForgotPage() {
         onChangeText={setOtp}
         />
 
-        <PrimaryButton title="Nhận OTP" onPress={() => router.replace("/login")} />
+        <PrimaryButton title="Nhận OTP" onPress={() => router.replace("/Login")} />
       </View>
     </View>
   );

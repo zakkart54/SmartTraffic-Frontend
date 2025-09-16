@@ -1,11 +1,21 @@
 import React, { useCallback, useRef } from 'react';
-import { View, Text, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, ImageBackground, TouchableOpacity, ScrollView, Button } from 'react-native';
 import NavigationBar from '@/components/NavigationBar';
 import { router } from "expo-router";
-import { useFocusEffect } from '@react-navigation/native';
 import Header from '@/components/Header';
-import { useAuth } from '@/hooks/useAuth';
+// import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
+import * as Notifications from "expo-notifications";
+
+async function showLocalNotification() {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "Thông báo mới",
+      body: "Đây là nội dung thông báo",
+    },
+    trigger: null,
+  });
+}
 
 const trafficData = {
   location: {
@@ -48,28 +58,8 @@ const trafficData = {
 };
 
 export default function HomePage() {
-  const { accessToken, refresh, logout } = useAuth();
-  const hasCheckedToken = useRef(false); 
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const checkToken = async () => {
-  //       if (hasCheckedToken.current) return; 
-  //       hasCheckedToken.current = true;
-  //       try {
-  //         if (accessToken) {
-  //           await refresh();
-  //         } else {
-  //           router.push('/Login');
-  //         }
-  //       } catch (e) {
-  //         await logout();
-  //         router.push('/Login');
-  //       }
-  //     };
-  //     checkToken();
-  //   }, [])
-  // );
+  // const { accessToken, refresh, logout } = useAuth();
+  // const hasCheckedToken = useRef(false);
   const { theme } = useTheme();
 
   return (
@@ -125,23 +115,15 @@ export default function HomePage() {
                 <View className="bg-[#edf2fc] mb-2 p-6 rounded-xl mt-4">
                   <Text className="text-[#063970] text-2xl font-bold">
                     {item.name} {'-'} {item.time}
-                    {/* <Text
-                      className={
-                        parseInt(item.reliability) >= 80
-                          ? 'text-green-600'
-                          : parseInt(item.reliability) >= 50
-                          ? 'text-orange-500'
-                          : 'text-red-500'
-                      }
-                    >
-                      {item.reliability}
-                    </Text> */}
                   </Text>
                 </View>
               </TouchableOpacity>
             ))}
           </View>
         </View>
+        <View>
+      <Button title="Tạo Notification" onPress={showLocalNotification} />
+    </View>
       </ScrollView>
       <NavigationBar />
     </ImageBackground>

@@ -35,7 +35,7 @@ export default function AboutPage() {
         style={{ flex: 1, width: "100%", height: "100%" }}
     >
         <TouchableOpacity
-            onPress={() => router.replace("/login")}
+            onPress={() => router.replace("/Login")}
             className="absolute right-10 top-10 z-10"
         >
             <Text className="text-white text-lg underline">Skip</Text>
@@ -71,7 +71,7 @@ export default function AboutPage() {
 
                 {page.title === "BẮT ĐẦU NGAY" && (
                   <TouchableOpacity
-                    onPress={() => router.replace("/register")}
+                    onPress={() => router.replace("/Register")}
                     className="mt-4 bg-white px-6 py-3 rounded-full"
                   >
                     <Text className="text-[#063970] text-lg font-bold">Đăng ký</Text>

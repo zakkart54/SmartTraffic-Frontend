@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import * as SecureStore from 'expo-secure-store';      
+import * as SecureStore from 'expo-secure-store';
 import { Alert } from 'react-native';
 import Constants from "expo-constants";
 
@@ -26,7 +26,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [username, setUsername] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  /** -- Helpers ------------------------------------------------------- */
   const saveTokens = async (access: string, refresh: string, username: string) => {
     await SecureStore.setItemAsync('access', access);
     await SecureStore.setItemAsync('refresh', refresh);
@@ -42,9 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setAccessToken(null);
     setUsername(null);
   };
-  
 
-  /** -- Actions ------------------------------------------------------- */
   const login = useCallback(
     async (username: string, password: string) => {
       setIsLoading(true);
@@ -95,7 +92,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await clearTokens();
   }, []);
 
-  /** -- Auto‑refresh on mount ---------------------------------------- */
   useEffect(() => {
     (async () => {
       const existingAccess = await SecureStore.getItemAsync('access');
@@ -108,22 +104,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     })();
   }, [refresh]);
-  
 
-  /** -- Context value -------------------------------------------------- */
   const value: AuthContextType = {
     accessToken,
     isLoading,
     username,
     login,
     logout,
-    refresh,
+    refresh
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-/** -- Hook cho component ---------------------------------------------- */
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');

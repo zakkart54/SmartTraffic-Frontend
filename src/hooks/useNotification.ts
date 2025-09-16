@@ -1,17 +1,51 @@
 import { useState, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import Constants from "expo-constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const API_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_API_URL;
 
 export interface Notification {
-  _id?: string;
-  userID: string;
   type: string;
   content: string;
+  timestamp: string;
+  [key: string]: any;
 }
 
 export const useNotification = () => {
+  const saveReadNotifications = async (ids: string[]) => {
+    await AsyncStorage.setItem("readNotiIds", JSON.stringify(ids));
+  };
+
+  const getReadNotifications = async () => {
+    const json = await AsyncStorage.getItem("readNotiIds");
+    return json ? JSON.parse(json) : [];
+  };
+
+  const markNotificationsAsRead = async (notifications: Notification[]) => {
+    const readIds = await getReadNotifications();
+    const newIds = notifications.map(n => n._id).filter(id => !readIds.includes(id));
+    if (newIds.length > 0) {
+      await saveReadNotifications([...readIds, ...newIds]);
+    }
+  };
+
+  const processNotifications = async (
+    notifications: Notification[]
+  ): Promise<any> => {
+    const json = await AsyncStorage.getItem("readNotiIds");
+    const readIds: string[] = json ? JSON.parse(json) : [];
+  
+    const processed = notifications.map(n => ({
+      ...n,
+      had_read: n._id ? readIds.includes(n._id) : false
+    }));
+  
+    const hasUnread = processed.some(n => !n.had_read);
+  
+    return { notifications: processed, hasUnread };
+  };
+
   const { accessToken } = useAuth();
   
   const base = `${API_URL}/notifications`;
@@ -72,6 +106,24 @@ export const useNotification = () => {
     }),
   [request]);
 
+  const getNotificationUsingGps = useCallback(
+    (lat: number, lon: number) =>
+      request<Notification[]>(`${base}/gps`, {
+        method: 'POST',
+        body: JSON.stringify({ lat, lon }),
+      }),
+    [request]
+  );
+
+  const getNotificationByUser = useCallback(
+    () =>
+      request<Notification[]>(`${base}/user`, {
+        method: 'GET'
+      }),
+    [request]
+  );
+
+
   return {
     isLoading,
     error,
@@ -80,5 +132,9 @@ export const useNotification = () => {
     addNotification,
     updateNotification,
     deleteNotification,
+    getNotificationUsingGps,
+    getNotificationByUser,
+    markNotificationsAsRead,
+    processNotifications
   };
 };

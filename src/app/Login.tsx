@@ -88,9 +88,9 @@ export default function LoginPage() {
           {passwordError ? <Text className="text-red-500 mt-1 ml-1">{passwordError}</Text> : null}
         </View>
 
-        <PrimaryButton title="Đăng nhập" disabled={isLoading} onPress={handleLogin} />
+        <PrimaryButton title="Đăng nhập" disabled={false} onPress={handleLogin} />
         <View>
-          <TouchableOpacity onPress={() => router.push("/register")}> 
+          <TouchableOpacity onPress={() => router.push("/Register")}> 
           <Text className={`text-center mt-4 ${theme === "dark" ? "text-white" : "text-black"}`}>Chưa có tài khoản? Đăng ký</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => router.push("/ForgotPassword")}> 
