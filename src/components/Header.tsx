@@ -22,6 +22,7 @@ export default function Header({ userName = "User", status = [], hideMenu= false
   const {getNotificationByUser, processNotifications, markNotificationsAsRead} = useNotification();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [hasUnread, setHasUnread] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     if (!accessToken) return;
@@ -82,8 +83,6 @@ export default function Header({ userName = "User", status = [], hideMenu= false
     return "text-red-600";
   };
 
-  const { theme } = useTheme();
-
   return (
     <View className={theme === "dark" ? "bg-[#063970]" : "bg-[#b6d2fe]"}>
       <View className="mt-16">
@@ -141,6 +140,26 @@ export default function Header({ userName = "User", status = [], hideMenu= false
                     </TouchableOpacity>
                   )
                     }
+                  <View className="flex-row items-center py-2">
+                    <TouchableOpacity
+                      onPress={() => setTheme("light")}
+                      className={`w-5 h-5 rounded-full mr-2 border-2 ${
+                        theme === "light"
+                          ? "bg-blue-300 border-blue-400"
+                          : "border-gray-400"
+                      }`}
+                    />
+                    <Text className="text-black mr-4">Sáng</Text>
+                    <TouchableOpacity
+                      onPress={() => setTheme("dark")}
+                      className={`w-5 h-5 rounded-full mr-2 border-2 ${
+                        theme === "dark"
+                          ? "bg-blue-800 border-blue-600"
+                          : "border-gray-400"
+                      }`}
+                    />
+                    <Text className="text-black">Tối</Text>
+                  </View>
                 </View>
               </Pressable>
             </Modal>

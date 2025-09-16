@@ -1,8 +1,9 @@
-import { View, Text, ImageBackground, ScrollView, TextInput,} from 'react-native';
+import { View, Text, ImageBackground, ScrollView, TextInput, TouchableOpacity, Image} from 'react-native';
 import NavigationBar from '@/components/NavigationBar';
 import { useLocalSearchParams } from 'expo-router';
 import Header from '@/components/Header';
 import { useTheme } from '@/hooks/useTheme';
+import { router } from "expo-router";
 
 export default function DetailStatus() {
   const { status } = useLocalSearchParams();
@@ -33,7 +34,16 @@ export default function DetailStatus() {
         <View className="flex-1 px-4 pt-20 justify-evenly">
           {/* Tình trạng */}
           <View className="mt-4">
-            <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Tình trạng</Text>
+            <View className="flex-row items-center justify-center relative">
+              <TouchableOpacity onPress={() => router.back()} className="absolute left-0">
+                <Image
+                  source={require("../asset/icons/back.png")}
+                  className="h-6 w-6 tint-white"
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+              <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Tình trạng</Text>
+            </View>
             <View className="bg-[#edf2fc] p-4 rounded-xl mt-4 items-center">
               <Text className="text-[#063970] text-3xl font-bold">{statusData.time}</Text>
               <Text className="text-[#063970] text-3xl mt-1">{statusData.name}</Text>

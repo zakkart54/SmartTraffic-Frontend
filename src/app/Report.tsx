@@ -11,6 +11,7 @@ import {
   Platform,
   ActivityIndicator,
   Linking,
+  ScrollView
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
@@ -214,7 +215,7 @@ export default function ReportPage() {
       style={{ flex: 1 }}
     >
       <Header hideMenu={true}/>
-
+      <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
       <View className="flex-1 px-4 pt-8 mt-4 justify-between">
 
         <View className="mt-4 mb-2">
@@ -222,7 +223,7 @@ export default function ReportPage() {
         </View>
 
         <View className="bg-blue-300 p-4 rounded-xl flex-row justify-between mb-4">
-          {types.map((item) => (
+          {/* {types.map((item) => (
             <TouchableOpacity
               key={item.key}
               className={`items-center px-2 ${
@@ -233,7 +234,23 @@ export default function ReportPage() {
               <Image source={item.icon} className="w-8 h-8 mb-1" />
               <Text className="text-black font-semibold">{item.label}</Text>
             </TouchableOpacity>
-          ))}
+          ))} */}
+          {types.map((item) => {
+            const isDisabled = item.key === 'video' || item.key === 'audio';
+            return (
+              <TouchableOpacity
+                key={item.key}
+                className={`items-center px-2 ${
+                  selectedType === item.key ? 'opacity-100' : 'opacity-70'
+                } ${isDisabled ? 'opacity-30' : ''}`}
+                onPress={() => !isDisabled && setSelectedType(item.key as any)}
+                disabled={isDisabled}
+              >
+                <Image source={item.icon} className="w-8 h-8 mb-1" />
+                <Text className="text-black font-semibold">{item.label}</Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         {selectedType === 'image' ? (
@@ -360,6 +377,7 @@ export default function ReportPage() {
           <Text className="text-white mt-2">Đang gửi dữ liệu...</Text>
         </View>
       ) : null}
+      </ScrollView>
       <NavigationBar />
 
     </ImageBackground>
