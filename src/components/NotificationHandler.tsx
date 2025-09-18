@@ -2,22 +2,26 @@ import { useEffect } from "react";
 import * as Location from "expo-location";
 import { useNotification } from "../hooks/useNotification";
 import { useAuth } from "@/hooks/useAuth";
+import { useAppSettings } from "@/hooks/useAppSetting";
 
 export default function NotificationHandler() {
   const { getNotificationUsingGps } = useNotification();
-  const {accessToken} = useAuth();
+  const { accessToken } = useAuth();
+  const { settings } = useAppSettings();
 
   useEffect(() => {
-    if (!accessToken) return;
+    if (!accessToken || !settings.notificationsEnabled) return;
+
     let subscription: Location.LocationSubscription;
     let intervalId: NodeJS.Timeout | null = null;
     let latestCoords: { latitude: number; longitude: number } | null = null;
-    const INTERVAL_MS = 300000;
+
+    const INTERVAL_MS = (settings.notifInterval ?? 5) * 60 * 1000;
 
     const callNotiApi = () => {
       if (!latestCoords) return;
       getNotificationUsingGps(latestCoords.latitude, latestCoords.longitude)
-        .catch(err => console.error("Notification API error:", err));
+        .catch((err) => console.error("Notification API error:", err));
     };
 
     const resetInterval = () => {
@@ -41,8 +45,8 @@ export default function NotificationHandler() {
       subscription = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.Balanced,
-          distanceInterval: 500,
-          timeInterval: 60000,
+          distanceInterval: settings.moveDistance ?? 500,
+          timeInterval: ((settings.notifInterval ?? 1) * 60 * 1000)
         },
         (loc) => {
           latestCoords = loc.coords;
@@ -56,6 +60,6 @@ export default function NotificationHandler() {
       subscription?.remove();
       if (intervalId) clearInterval(intervalId);
     };
-  }, [getNotificationUsingGps]);
+  }, [accessToken, settings, getNotificationUsingGps]);
   return null;
 }

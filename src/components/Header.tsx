@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity, Modal, Pressable } from "react-native";
 import { router } from "expo-router";
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AppLogo from "../components/AppLogo";
 import { useTheme } from "@/hooks/useTheme";
 import {useAuth} from "../hooks/useAuth";
@@ -14,7 +15,7 @@ interface Props {
   hideMenu?: boolean;
 }
 
-export default function Header({ userName = "User", status = [], hideMenu= false }: Props) {
+export default function Header({ userName = "User", hideMenu= false }: Props) {
   const { accessToken, logout } = useAuth();
   userName = userName || "User";
   const [menuVisible, setMenuVisible] = useState(false);
@@ -29,7 +30,7 @@ export default function Header({ userName = "User", status = [], hideMenu= false
     const fetchNotifications = async () => {
       try {
         const data = await getNotificationByUser();
-        const {hasUnread, notifications} = await processNotifications(data[0] as any);
+        const {hasUnread, notifications} = await processNotifications(data as any);
         setNotifications(notifications);
         setHasUnread(hasUnread);
       } catch (err) {
@@ -70,18 +71,18 @@ export default function Header({ userName = "User", status = [], hideMenu= false
 
   const openStatus = (status) => {
     setNotifVisible(false);
-    router.push({
-      pathname: "/DetailStatus",
-      params: { status: JSON.stringify(status) },
-    });
+  //   router.push({
+  //     pathname: "/DetailStatus",
+  //     params: { status: JSON.stringify(status) },
+  //   });
   };
 
-  const reliabilityClass = (rel: string) => {
-    const v = parseInt(rel);
-    if (v >= 80) return "text-green-600";
-    if (v >= 50) return "text-yellow-500";
-    return "text-red-600";
-  };
+  // const reliabilityClass = (rel: string) => {
+  //   const v = parseInt(rel);
+  //   if (v >= 80) return "text-green-600";
+  //   if (v >= 50) return "text-yellow-500";
+  //   return "text-red-600";
+  // };
 
   return (
     <View className={theme === "dark" ? "bg-[#063970]" : "bg-[#b6d2fe]"}>
@@ -100,7 +101,12 @@ export default function Header({ userName = "User", status = [], hideMenu= false
                 resizeMode="contain"
               />
                 {hasUnread && (
-                  <View className="absolute -top-1 -right-1 bg-red-600 w-3 h-3 rounded-full" />
+                  <MaterialIcons
+                    name="fiber-manual-record"
+                    size={10}
+                    color="red"
+                    style={{ position: 'absolute', top: -2, right: -2 }}
+                  />
                 )}
             </TouchableOpacity>
           

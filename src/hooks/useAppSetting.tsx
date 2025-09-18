@@ -3,6 +3,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type AppSettings = {
   notificationsEnabled: boolean;
+  notifInterval: number;
+  moveDistance: number;
 };
 
 type SettingsContextType = {
@@ -11,7 +13,9 @@ type SettingsContextType = {
 };
 
 const defaultSettings: AppSettings = {
-  notificationsEnabled: true
+  notificationsEnabled: true,
+  notifInterval: 30,
+  moveDistance: 500,
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -21,7 +25,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     AsyncStorage.getItem("app_settings").then((data) => {
-      if (data) setSettings(JSON.parse(data));
+      if (data) {
+        const saved = JSON.parse(data);
+        setSettings({ ...defaultSettings, ...saved });
+      }
     });
   }, []);
 
