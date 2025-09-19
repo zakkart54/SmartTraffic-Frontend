@@ -74,7 +74,7 @@ export default function AboutPage() {
                     onPress={() => router.replace("/Register")}
                     className="mt-4 bg-white px-6 py-3 rounded-full"
                   >
-                    <Text className="text-[#063970] text-lg font-bold">Đăng ký</Text>
+                    <Text className="text-[#063970] text-lg font-extrabold">Đăng ký</Text>
                   </TouchableOpacity>
                 )}
             </View>

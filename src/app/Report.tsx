@@ -33,10 +33,10 @@ import { useTheme } from "@/hooks/useTheme";
 import {useAuth} from "../hooks/useAuth";
 
 const types = [
-  { key: 'image', label: 'Hình ảnh', icon: require('@/asset/icons/image.png') },
-  { key: 'video', label: 'Video', icon: require('@/asset/icons/video.png') },
-  { key: 'audio', label: 'Âm thanh', icon: require('@/asset/icons/audio.png') },
   { key: 'text', label: 'Văn bản', icon: require('@/asset/icons/text.png') },
+  { key: 'image', label: 'Hình ảnh', icon: require('@/asset/icons/image.png') },
+  { key: 'audio', label: 'Âm thanh', icon: require('@/asset/icons/audio.png') },
+  { key: 'video', label: 'Video', icon: require('@/asset/icons/video.png') },
 ] as const;
 
 type TypeKey = typeof types[number]['key'];
@@ -44,7 +44,7 @@ type TypeKey = typeof types[number]['key'];
 export default function ReportPage() {
   const { theme } = useTheme();
   const { accessToken } = useAuth();
-  const [selectedType, setSelectedType] = useState<TypeKey>('image');
+  const [selectedType, setSelectedType] = useState<TypeKey>('text');
   const [dataUri, setDataUri] = useState<string | null>(null);
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recorderState = useAudioRecorderState(recorder);
@@ -236,7 +236,8 @@ export default function ReportPage() {
             </TouchableOpacity>
           ))} */}
           {types.map((item) => {
-            const isDisabled = item.key === 'video' || item.key === 'audio';
+            // const isDisabled = item.key === 'video' || item.key === 'audio';
+            const isDisabled = false;
             return (
               <TouchableOpacity
                 key={item.key}

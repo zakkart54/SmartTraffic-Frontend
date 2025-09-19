@@ -83,7 +83,7 @@ export default function SettingsPage() {
 
         <TouchableOpacity
           onPress={() => router.push("/AccountSettings")}
-          className="bg-white rounded-xl p-4 mb-6 shadow"
+          className="bg-[#edf2fc] rounded-xl p-4 mb-6 shadow"
         >
           <Text className="text-lg font-semibold text-blue-600">Quản lý tài khoản</Text>
           <Text className="text-gray-500 text-sm mt-1">
@@ -91,7 +91,7 @@ export default function SettingsPage() {
           </Text>
         </TouchableOpacity>
 
-        <View className="bg-white rounded-xl mb-6 shadow">
+        <View className="bg-[#edf2fc] rounded-xl mb-6 shadow">
           <TouchableOpacity
             onPress={toggleNotif}
             className="flex-row justify-between items-center p-4 border-b border-gray-200"
@@ -118,7 +118,8 @@ export default function SettingsPage() {
               className="p-4"
             >
               <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                <Text style={{ color: theme === "dark" ? "#fff" : "#000", fontSize: 16 }}>Bật thông báo</Text>
+                {/* <Text style={{ color: theme === "dark" ? "#fff" : "#000", fontSize: 16 }}>Bật thông báo</Text> */}
+                <Text style={{ color: "#000", fontSize: 16 }}>Bật thông báo</Text>
                 <Switch
                   value={localSettings.notificationsEnabled}
                   onValueChange={(val) => handleChange("notificationsEnabled", val)}
@@ -173,7 +174,7 @@ export default function SettingsPage() {
           </Animated.View>
         </View>
 
-        <View className="bg-white rounded-xl p-4 shadow">
+        <View className="bg-[#edf2fc] rounded-xl p-4 shadow">
           <Text className="text-lg font-semibold mb-3">Giao diện</Text>
           <View className="flex-row items-center">
             <TouchableOpacity
@@ -182,7 +183,7 @@ export default function SettingsPage() {
                 theme === "light" ? "bg-blue-300 border-blue-400" : "border-gray-400"
               }`}
             />
-            <Text className="mr-6">Sáng</Text>
+            <Text className="mr-12">Sáng</Text>
 
             <TouchableOpacity
               onPress={() => setTheme("dark")}

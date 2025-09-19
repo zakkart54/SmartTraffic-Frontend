@@ -97,7 +97,7 @@ export default function LoginPage() {
           <Text className={`text-center mt-4 ${theme === "dark" ? "text-white" : "text-black"}`}>Quên mật khẩu?</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => router.push("/")}> 
-          <Text className="text-white text-center mt-4">Bỏ qua</Text>
+          <Text className={`text-center mt-4 underline ${theme === "dark" ? "text-white" : "text-black"}`}>Bỏ qua</Text>
           </TouchableOpacity>
         </View>
       </View>

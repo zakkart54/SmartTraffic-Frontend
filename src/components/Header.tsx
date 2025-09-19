@@ -146,7 +146,7 @@ export default function Header({ userName = "User", hideMenu= false }: Props) {
                     </TouchableOpacity>
                   )
                     }
-                  <View className="flex-row items-center py-2">
+                  {/* <View className="flex-row items-center py-2">
                     <TouchableOpacity
                       onPress={() => setTheme("light")}
                       className={`w-5 h-5 rounded-full mr-2 border-2 ${
@@ -165,7 +165,7 @@ export default function Header({ userName = "User", hideMenu= false }: Props) {
                       }`}
                     />
                     <Text className="text-black">Tối</Text>
-                  </View>
+                  </View> */}
                 </View>
               </Pressable>
             </Modal>

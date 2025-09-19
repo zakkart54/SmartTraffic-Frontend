@@ -139,7 +139,11 @@ export default function AccountSettings() {
           </Text>
         </View>
   
-        <View className="bg-white rounded-xl p-4 mb-6 shadow flex-shrink">
+        {/* <View className="bg-white rounded-xl p-4 mb-6 shadow flex-shrink"> */}
+        <View className={`rounded-xl p-4 mb-6 shadow flex-shrink ${
+            theme === "dark" ? "bg-[#1488DB]" : "bg-[#edf2fc]"
+          }`}
+        >
           <TextInputField label="Email" value={email} rightIconName="lock" editable={false} />
           <TextInputField label="Tên tài khoản" value={username} rightIconName="lock" editable={false} />
   
