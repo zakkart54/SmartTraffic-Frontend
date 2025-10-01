@@ -107,6 +107,9 @@ export default function AccountSettings() {
   if (isLoading && !profile) {
     return (
       <View className={`flex-1 ${theme === "dark" ? "bg-[#05416C]" : "bg-[#b6d2fe]"}`}>
+        <TouchableOpacity onPress={() => router.back()} className="absolute left-0">
+          <Image source={require("../asset/icons/back.png")} className="h-6 w-6 tint-white" />
+        </TouchableOpacity>
         <ScrollView className="flex-1 p-8" contentContainerStyle={{ paddingBottom: 32 }}>
           <View className="mt-16">
             <AppLogo />

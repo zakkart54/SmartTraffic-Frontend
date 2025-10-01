@@ -5,17 +5,6 @@ import { router } from "expo-router";
 import Header from '@/components/Header';
 // import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
-import * as Notifications from "expo-notifications";
-
-async function showLocalNotification() {
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: "Thông báo mới",
-      body: "Đây là nội dung thông báo",
-    },
-    trigger: null,
-  });
-}
 
 const trafficData = {
   location: {
@@ -122,7 +111,6 @@ export default function HomePage() {
           </View>
         </View>
         <View>
-      <Button title="Tạo Notification" onPress={showLocalNotification} />
     </View>
       </ScrollView>
       <NavigationBar />

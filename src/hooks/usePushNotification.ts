@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import * as Notifications from "expo-notifications";
+import { router } from "expo-router";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -32,11 +33,11 @@ export function usePushNotification() {
       const token = (await Notifications.getExpoPushTokenAsync()).data;
       setExpoPushToken(token);
     })();
-
+    
     responseListener.current = Notifications.addNotificationResponseReceivedListener(
       (response) => {
         console.log("User tapped notification:", response.notification);
-        // Bạn có thể navigate hoặc xử lý tại đây
+        router.replace("/Maps");
       }
     );
 

@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import Constants from "expo-constants";
+import axios, { AxiosRequestConfig } from "axios";
 
 const API_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_API_URL;
 
@@ -22,27 +23,32 @@ export const useReport = () => {
   const [error, setError] = useState<string | null>(null);
 
   const request = useCallback(
-    async <T,>(url: string, options: RequestInit = {}): Promise<T> => {
+    async <T,>(url: string, options: AxiosRequestConfig = {}): Promise<T> => {
       setIsLoading(true);
       setError(null);
+
       try {
-        const res = await fetch(url, {
-          ...options,
+        const res = await axios({
+          url,
+          method: options.method || "GET",
+          data: options.data,
           headers: {
+            "Content-Type": "application/json",
             ...(accessToken ? { Authorization: accessToken } : {}),
             ...(options.headers || {}),
           },
+          timeout: 30000,
         });
 
-        const json = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          throw new Error(json.error || res.statusText);
-        }
-
-        return json as T;
+        return res.data as T;
       } catch (err: any) {
-        setError(err.message);
-        throw err;
+        const message =
+          err.response?.data?.error ||
+          err.response?.statusText ||
+          err.message ||
+          "Unknown error";
+        setError(message);
+        throw new Error(message);
       } finally {
         setIsLoading(false);
       }
@@ -63,7 +69,7 @@ export const useReport = () => {
     request<ReportEntry>(`${base}/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(report),
+      data: JSON.stringify(report),
     }), [request]);
 
   const updateReport = useCallback((report: ReportEntry) => {
@@ -74,7 +80,7 @@ export const useReport = () => {
     return request<ReportEntry>(`${base}/`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(report),
+      data: JSON.stringify(report),
     });
   }, [request]);
 

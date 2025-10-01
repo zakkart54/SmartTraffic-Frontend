@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import Constants from "expo-constants";
+import axios, { AxiosRequestConfig } from "axios";
 
 const API_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_API_URL;
 
@@ -19,29 +20,26 @@ export const useText = () => {
   const [error, setError] = useState<string | null>(null);
 
   const request = useCallback(
-    async <T,>(url: string, options: RequestInit = {}): Promise<T> => {
+    async <T,>(url: string, options: AxiosRequestConfig = {}): Promise<T> => {
       setIsLoading(true);
       setError(null);
+
       try {
-        console.log(accessToken)
-        const res = await fetch(url, {
-          ...options,
+        const res = await axios<T>(url, {
+          timeout: 30000,
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             ...(accessToken ? { Authorization: accessToken } : {}),
             ...(options.headers || {}),
           },
+          ...options,
         });
 
-        const json = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          throw new Error(json.error ?? res.statusText);
-        }
-
-        return json as T;
+        return res.data;
       } catch (err: any) {
-        setError(err.message);
-        throw err;
+        const message = err.response?.data?.error || err.message;
+        setError(message);
+        throw new Error(message);
       } finally {
         setIsLoading(false);
       }
@@ -61,13 +59,13 @@ export const useText = () => {
   const addText = useCallback((text: { dataID: string, content: string }) =>
     request<TextEntry>(`${base}/`, {
       method: 'POST',
-      body: JSON.stringify(text),
+      data: JSON.stringify(text),
     }), [request]);
 
   const updateText = useCallback((text: { _id: string, dataID: string, content: string }) =>
     request<TextEntry>(`${base}/`, {
       method: 'PUT',
-      body: JSON.stringify(text),
+      data: JSON.stringify(text),
     }), [request]);
 
   const deleteText = useCallback((id: string) =>

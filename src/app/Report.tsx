@@ -27,7 +27,7 @@ import Header from '@/components/Header';
 import NavigationBar from '@/components/NavigationBar';
 import PrimaryButton from '@/components/PrimaryButton';
 import { useData } from '@/hooks/useData';
-// import { useImage } from '@/hooks/useImage';
+import { useReport } from '@/hooks/useReport';
 // import { format } from "date-fns";
 import { useTheme } from "@/hooks/useTheme";
 import {useAuth} from "../hooks/useAuth";
@@ -48,12 +48,14 @@ export default function ReportPage() {
   const [dataUri, setDataUri] = useState<string | null>(null);
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recorderState = useAudioRecorderState(recorder);
-  const [description, setDescription] = useState('');
-  const [location, setLocation] = useState('');
+  // const [description, setDescription] = useState('');
+  // const [location, setLocation] = useState('');
   const player = useAudioPlayer({ uri: dataUri || '' });
+  const [isLoading, setIsLoading] = useState(false);
   // const [isFetchingLocation, setIsFetchingLocation] = useState(false);
 
-  const { addImageData, addTextData, isLoading } = useData();
+  const { addImageData, addTextData } = useData();
+  const {addReport} = useReport();
   // const { addImage, isLoading} = useImage();
 
   useEffect(() => {
@@ -77,7 +79,10 @@ export default function ReportPage() {
       }
 
       const pos = await Location.getCurrentPositionAsync({});
-      setLocation(`${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}`);
+      return [
+        parseFloat(pos.coords.latitude.toFixed(6)),
+        parseFloat(pos.coords.longitude.toFixed(6)),
+      ];
     } catch (error) {
       console.error('Lỗi lấy vị trí:', error);
       Alert.alert('Lỗi', 'Không thể lấy vị trí hiện tại.');
@@ -170,36 +175,52 @@ export default function ReportPage() {
     }
   };
 
-  const handleSubmit = async () => {  
+  const handleSubmit = async () => {
+    if (selectedType === 'video' || selectedType === 'audio') {
+      Alert.alert('Thông báo', 'Ứng dụng chưa hỗ trợ gửi video và âm thanh');
+    }
     if (!accessToken){
       Alert.alert('Thông báo','Vui lòng đăng nhập để gửi tình trạng.');
       return;
     }
 
     if (!dataUri) {
-      Alert.alert('Lỗi', 'Vui lòng điền thông tin.');
+      Alert.alert('Thông báo', 'Vui lòng điền thông tin.');
+      return;
+    }
+
+    setIsLoading(true);
+    const gps = await fetchGPS();
+    if (!gps) {
+      Alert.alert('Thông báo', 'Yêu cầu quyền truy cập GPS để gửi tình trạng.');
+      setIsLoading(false);
       return;
     }
   
     try {
       if (selectedType=='image') {
-          await addImageData(dataUri);
-          Alert.alert('Thành công', 'Hình ảnh đã được gửi.');
-      }
-      else if (selectedType === 'video') {
-      }
-      else if (selectedType === 'audio') {
+        const data = await addImageData(dataUri);
+        await addReport({
+          dataImgID: data.dataID,
+          lat: gps[0],
+          lon: gps[1],
+        });
+        Alert.alert('Thành công', 'Hình ảnh đã được gửi.');
       }
       else if (selectedType === 'text') {
-        await addTextData(dataUri);
+        const data = await addTextData(dataUri);
+        await addReport({
+          dataTextID: data.dataID,
+          lat: gps[0],
+          lon: gps[1],
+        });
         Alert.alert('Thành công', 'Văn bản đã được gửi.');
       }
-  
+      setIsLoading(false);
       setDataUri('');
-      setDescription('');
-      setLocation('');
     } catch (err: any) {
       console.error(err);
+      setIsLoading(false);
       Alert.alert('Lỗi', err.message || 'Không thể gửi hình ảnh.');
     }
   };
@@ -235,26 +256,22 @@ export default function ReportPage() {
               <Text className="text-black font-semibold">{item.label}</Text>
             </TouchableOpacity>
           ))} */}
-          {types.map((item) => {
-            const isDisabled = item.key === 'video' || item.key === 'audio';
-            return (
-              <TouchableOpacity
-                key={item.key}
-                className={`items-center px-2 ${
-                  selectedType === item.key ? 'opacity-100' : 'opacity-70'
-                } ${isDisabled ? 'opacity-30' : ''}`}
-                onPress={() => !isDisabled && setSelectedType(item.key as any)}
-                disabled={isDisabled}
-              >
-                <Image source={item.icon} className="w-8 h-8 mb-1" />
-                <Text className="text-black font-semibold">{item.label}</Text>
-              </TouchableOpacity>
-            );
-          })}
+          {types.map((item) => (
+            <TouchableOpacity
+              key={item.key}
+              className={`items-center px-2 ${
+                selectedType === item.key ? 'opacity-100' : 'opacity-70'
+              }`}
+              onPress={() => setSelectedType(item.key as any)}
+            >
+              <Image source={item.icon} className="w-8 h-8 mb-1" />
+              <Text className="text-black font-semibold">{item.label}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
         {selectedType === 'image' ? (
-          <View className="bg-[#edf2fc] rounded-xl mb-4 justify-center items-center min-h-[200px]">
+          <View className="bg-[#edf2fc] rounded-xl mb-4 justify-center items-center min-h-[300px]">
             <TouchableOpacity onPress={() => pickFile('Images')} className="items-center">
               {dataUri ? (
                 <Image
@@ -279,7 +296,7 @@ export default function ReportPage() {
         ) : null}
 
         {selectedType === 'video' ? (
-          <View className="bg-[#edf2fc] rounded-xl mb-4 justify-center items-center min-h-[200px]">
+          <View className="bg-[#edf2fc] rounded-xl mb-4 justify-center items-center min-h-[300px]">
             <TouchableOpacity onPress={() => pickFile('Videos')} className="items-center">
               {dataUri ? (
                 <Text className="text-black text-center font-medium">
@@ -302,7 +319,7 @@ export default function ReportPage() {
         ) : null}
 
         {selectedType === 'audio' ? (
-          <View className="bg-[#edf2fc] rounded-xl mb-4 justify-center items-center min-h-[200px] p-4">
+          <View className="bg-[#edf2fc] rounded-xl mb-4 justify-center items-center min-h-[300px] p-4">
             <TouchableOpacity
               className="bg-blue-500 rounded-md px-4 py-2 mb-3"
               onPress={recorderState.isRecording ? stopRecording : startRecording}
@@ -333,7 +350,7 @@ export default function ReportPage() {
         ) : null}
 
         {selectedType === 'text' ? (
-          <View className="bg-[#edf2fc] rounded-xl mb-4 min-h-[200px]">
+          <View className="bg-[#edf2fc] rounded-xl mb-4 min-h-[300px]">
             <TextInput
               placeholder="Nhập mô tả tình trạng giao thông bằng văn bản"
               placeholderTextColor="#6b7280"
@@ -353,7 +370,7 @@ export default function ReportPage() {
           className="bg-[#edf2fc] text-black rounded-xl px-4 py-3 mb-4"
         /> */}
 
-        <View className="flex-row items-center bg-[#edf2fc] rounded-xl px-2 py-3 mb-4">
+        {/* <View className="flex-row items-center bg-[#edf2fc] rounded-xl px-2 py-3 mb-4">
           <TextInput
             placeholder="Vị trí phát hiện"
             placeholderTextColor="#6b7280"
@@ -364,10 +381,10 @@ export default function ReportPage() {
           <TouchableOpacity onPress={fetchGPS} className="bg-blue-500 rounded-md px-3 py-2 active:opacity-80">
             <Text className="text-white text-sm font-bold">GPS</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
         <View className="mb-4 px-16">
-          <PrimaryButton title="Gửi tình trạng" onPress={handleSubmit} />
+          <PrimaryButton title="Gửi tình trạng" loadingTitle = "Đang gửi dữ liệu" onPress={handleSubmit} disabled={isLoading}/>
         </View>
       </View>
 

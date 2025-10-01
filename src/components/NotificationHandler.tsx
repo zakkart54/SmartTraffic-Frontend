@@ -1,13 +1,17 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import * as Location from "expo-location";
 import { useNotification } from "../hooks/useNotification";
 import { useAuth } from "@/hooks/useAuth";
 import { useAppSettings } from "@/hooks/useAppSetting";
+import * as Notifications from "expo-notifications";
+import {usePushNotification} from "@/hooks/usePushNotification";
 
 export default function NotificationHandler() {
   const { getNotificationUsingGps } = useNotification();
   const { accessToken } = useAuth();
   const { settings } = useAppSettings();
+  const lastNotiRef = useRef<string | null>(null);
+  const { scheduleLocalNotification } = usePushNotification();
 
   useEffect(() => {
     if (!accessToken || !settings.notificationsEnabled) return;
@@ -18,10 +22,27 @@ export default function NotificationHandler() {
 
     const INTERVAL_MS = (settings.notifInterval ?? 5) * 60 * 1000;
 
-    const callNotiApi = () => {
+    const callNotiApi = async () => {
       if (!latestCoords) return;
-      getNotificationUsingGps(latestCoords.latitude, latestCoords.longitude)
-        .catch((err) => console.error("Notification API error:", err));
+      try {
+        const res = await getNotificationUsingGps(
+          latestCoords.latitude,
+          latestCoords.longitude
+        );
+    
+        const notis: any[] = Array.isArray(res?.[0]) ? res[0] : [];
+    
+        for (const n of notis) {
+          if (n?.content) {
+            if (lastNotiRef.current !== n.content) {
+              lastNotiRef.current = n.content;
+              scheduleLocalNotification("Cảnh báo giao thông", n.content);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Notification API error:", err);
+      }
     };
 
     const resetInterval = () => {

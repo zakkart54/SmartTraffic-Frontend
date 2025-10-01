@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 import * as SecureStore from 'expo-secure-store';
 import { Alert } from 'react-native';
 import Constants from "expo-constants";
+import axios from "axios";
 
 const API_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_API_URL;
 
@@ -46,20 +47,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     async (username: string, password: string) => {
       setIsLoading(true);
       try {
-        const res = await fetch(`${API_URL}/auth/login`, {
-          method: 'POST',
+        const res = await axios.post<LoginResponse>(`${API_URL}/auth/login`, {
+          username,
+          password,
+        }, {
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ "username":username,"password": password }),
+          timeout: 15000,
         });
-        if (!res.ok) {
-          const errText = await res.text();
-          throw new Error(errText || 'Đăng nhập thất bại');
-        }
-        const data: LoginResponse = await res.json();
+
+        const data = res.data;
         await saveTokens(data.access_token, data.refresh_token, username);
         return true;
       } catch (e: any) {
-        Alert.alert('Đăng nhập thất bại', e.message);
+        const message = e.response?.data?.error || e.message || "Đăng nhập thất bại";
+        Alert.alert('Đăng nhập thất bại', message);
         return false;
       } finally {
         setIsLoading(false);
@@ -74,14 +75,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!refreshToken || !username) return logout();
 
     try {
-      const res = await fetch(`${API_URL}/auth/refresh`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: refreshToken, username: username }),
-      });
-      if (!res.ok) throw new Error('Token expired');
+      const res = await axios.post<Pick<LoginResponse, 'access_token'>>(
+        `${API_URL}/auth/refresh`,
+        { token: refreshToken, username },
+        { headers: { 'Content-Type': 'application/json' }, timeout: 15000 }
+      );
 
-      const data: Pick<LoginResponse, 'access_token'> = await res.json();
+      const data = res.data;
       await saveTokens(data.access_token, refreshToken, username);
     } catch {
       await logout();
@@ -95,10 +95,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     (async () => {
       const existingAccess = await SecureStore.getItemAsync('access');
-      // const storedUsername = await SecureStore.getItemAsync('username');
+      const storedUsername = await SecureStore.getItemAsync('username');
       if (existingAccess) {
         setAccessToken(existingAccess);
-        // if (storedUsername) setUsername(storedUsername);
+        if (storedUsername) setUsername(storedUsername);
       } else {
         await refresh();
       }

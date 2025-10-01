@@ -6,6 +6,7 @@
   import { SettingsProvider } from "@/hooks/useAppSetting";
   import * as Notifications from "expo-notifications";
   import NotificationHandler from "@/components/NotificationHandler";
+  import { router } from "expo-router";
 
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -28,6 +29,7 @@
       const sub = Notifications.addNotificationResponseReceivedListener(
         (response) => {
           console.log("User tapped notification:", response.notification);
+          router.replace("/Maps");
         }
       );
       return () => {

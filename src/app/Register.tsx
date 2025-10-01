@@ -20,6 +20,18 @@ export default function RegisterPage() {
       Alert.alert("Thiếu thông tin", "Vui lòng điền đầy đủ thông tin.");
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert("Lỗi", "Email không hợp lệ.");
+      return;
+    }
+  
+    if (password.length < 6) {
+      Alert.alert("Lỗi", "Mật khẩu phải có ít nhất 6 ký tự.");
+      return;
+    }
+
     if (password !== confirm) {
       Alert.alert("Lỗi", "Mật khẩu xác nhận không khớp.");
       return;

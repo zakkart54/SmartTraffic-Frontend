@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import Constants from "expo-constants";
+import axios, { AxiosRequestConfig } from "axios";
 
 const API_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_API_URL;
 
@@ -27,37 +28,36 @@ export const useData = () => {
   const [error, setError] = useState<string | null>(null);
 
   const request = useCallback(
-    async <T,>(url: string, options: RequestInit = {}): Promise<T> => {
-      setIsLoading(true);
+    async <T,>(url: string, options: AxiosRequestConfig = {}): Promise<T> => {
       setError(null);
+      setIsLoading(true); 
       try {
-        const res = await fetch(url, {
-          ...options,
+        const res = await axios({
+          url,
+          method: options.method || "GET",
+          data: options.data,
+          params: options.params,
           headers: {
             ...(accessToken ? { Authorization: accessToken } : {}),
             ...(options.headers || {}),
           },
+          timeout: 30000,
         });
 
-        const json = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          throw new Error(json.error || res.statusText);
-        }
-
-        return json as T;
+        return res.data as T;
       } catch (err: any) {
         setError(err.message);
         throw err;
-      } finally {
+      }finally {
         setIsLoading(false);
       }
     },
-    [accessToken],
+    [accessToken]
   );
 
   const getAllData = useCallback(() => request<DataEntry[]>(`${base}/`), [request]);
 
-  const getDataByUploaderId = useCallback(() =>
+  const getDataByUploader = useCallback(() =>
     request<DataEntry>(`${base}/dataByUploader`),
   [request]);
 
@@ -65,7 +65,7 @@ export const useData = () => {
     request<DataEntry>(`${base}/`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...data, username }),
+      data: JSON.stringify({ ...data, username })
     }),
   [request, username]);
 
@@ -77,7 +77,7 @@ export const useData = () => {
     return request<DataEntry>(`${base}/`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      data: JSON.stringify(data)
     });
   }, [request]);
 
@@ -87,52 +87,8 @@ export const useData = () => {
     }),
   [request]);
 
-  // const addImageData = useCallback(
-  //   async (data?: DataEntry) => {
-  //     setIsLoading(true);
-  //     setError(null);
-  //     try {
-  //       // const payload = {
-  //       //   segmentID: data.segmentID ,
-  //       //   dataID: data.dataID,
-  //       //   type: data.type,
-  //       //   uploadTime: data.uploadTime,
-  //       //   InfoID: data.InfoID,
-  //       //   location: data.location,
-  //       //   processed: data.processed,
-  //       // };
-
-  //       const payload = {
-  //         segmentID: '64d9f1a37c8a4f2e8f0c3b1b'  ,
-  //         uploaderID: '64d9f1a37c8a4f2e8f0c3b1c',
-  //         type: 'image',
-  //         uploadTime: "2025/07/12",
-  //         InfoID: "64d9f1a37c8a4f2e8f0c3b1c",
-  //         location: "hehe",
-  //         processed: false,
-  //         processed_time: null,
-  //         TrainValTest: null
-  //       };
-  
-  //       return request<DataEntry>(`${base}/`, {
-  //         method: 'POST',
-  //         headers: { 'Content-Type': 'application/json' },
-  //         body: JSON.stringify(payload),
-  //       });
-  //     } catch (err: any) {
-  //       setError(err.message);
-  //       throw err;
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   },
-  //   [accessToken],
-  // );
-  
-
   const addImageData = useCallback(
     async (fileUri: string) => {
-      setIsLoading(true);
       setError(null);
       try {
         const filename = fileUri.split('/').pop() || 'file';
@@ -141,58 +97,57 @@ export const useData = () => {
         formData.append('fileUpload', {
           uri: fileUri,
           name: filename,
-          type,
+          type
         } as any);
         return request<DataEntry>(`${base}/img`, {
           method: "POST",
-          body: formData,
-          headers: { 'Content-Type': 'multipart/form-data' },
+          data: formData,
+          headers: { 'Content-Type': 'multipart/form-data' }
         });
       } catch (err: any) {
         setError(err.message);
         throw err;
-      } finally {
-        setIsLoading(false);
       }
     },
     [accessToken]
   );
 
-const addTextData = useCallback(
-  async (content: string) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      if (!content) throw new Error('Missing content');
+  const addTextData = useCallback(
+    async (content: string) => {
+      setError(null);
+      try {
+        if (!content) throw new Error('Missing content');
 
-      const payload = {
-        content,
-      };
+        const payload = {
+          content,
+        };
 
-      return request<DataEntry>(`${base}/text`, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      });
-    } catch (err: any) {
-      setError(err.message);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  },
-  [accessToken]
-);
+        return request<DataEntry>(`${base}/text`, {
+          method: 'POST',
+          data: JSON.stringify(payload),
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        });
+      } catch (err: any) {
+        setError(err.message);
+        throw err;
+      }
+    },
+    [accessToken]
+  );
 
-  
+  const getDataDetail = useCallback(
+    (id: string) => request(`${base}/detail/${id}`),
+    [request]
+  );
 
   return {
     isLoading,
     error,
     getAllData,
-    getDataByUploaderId,
+    getDataByUploader,
+    getDataDetail,
     addData,
     updateData,
     deleteData,

@@ -25,24 +25,32 @@ export const useSegment = () => {
     async <T,>(url: string, options: AxiosRequestConfig = {}): Promise<T> => {
       setIsLoading(true);
       setError(null);
-
       try {
         const res = await axios({
           url,
           method: options.method || "GET",
           data: options.data,
           headers: {
-            "Content-Type": "application/json",
             ...(accessToken ? { Authorization: accessToken } : {}),
             ...(options.headers || {}),
           },
-          timeout: 20000,
+          timeout: 30000, // 30s
         });
-        const b64data = res.data.data;
-        const compressed = Uint8Array.from(atob(b64data), c => c.charCodeAt(0));
-        const decompressed = pako.ungzip(compressed, { to: "string" });
-        return JSON.parse(decompressed) as T;
 
+        if (res.data?.data && typeof res.data.data === "string") {
+          try {
+            const b64data = res.data.data;
+            const compressed = Uint8Array.from(atob(b64data), (c) =>
+              c.charCodeAt(0)
+            );
+            const decompressed = pako.ungzip(compressed, { to: "string" });
+            return JSON.parse(decompressed) as T;
+          } catch {
+            return res.data as T;
+          }
+        }
+
+        return res.data as T;
       } catch (err: any) {
         const message =
           err.response?.data?.error ||

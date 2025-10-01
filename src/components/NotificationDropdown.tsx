@@ -7,6 +7,7 @@ interface Props {
   onClose: () => void;
   notifications: Notification[];
   onOpenStatus: (status: Notification) => void;
+  onMarkAllRead?: () => void;
 }
 
 export default function NotificationDropdown({
@@ -14,6 +15,7 @@ export default function NotificationDropdown({
   onClose,
   notifications,
   onOpenStatus,
+  onMarkAllRead,
 }: Props) {
   return (
     <Modal transparent animationType="fade" visible={visible} onRequestClose={onClose}>
@@ -22,7 +24,15 @@ export default function NotificationDropdown({
         className="flex-1 justify-start items-end pt-40 mt-4 bg-transparent"
       >
         <View className="bg-white rounded-md shadow-lg p-2 w-72 mr-2 mt-2 max-h-96">
-          <Text className="text-black font-semibold px-2 pb-2">Thông báo</Text>
+          <View className="flex-row justify-between items-center px-2 pb-2">
+            <Text className="text-black font-semibold">Thông báo</Text>
+            {notifications.length > 0 && onMarkAllRead && (
+              <TouchableOpacity onPress={onMarkAllRead}>
+                <Text className="text-blue-500 text-sm">Đánh dấu đã xem</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
           {notifications.length === 0 ? (
             <Text className="text-gray-500 px-2 py-2">Không có tình trạng mới</Text>
           ) : (

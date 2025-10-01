@@ -8,8 +8,8 @@ export interface UserProfile {
   fullName: string;
   username: string;
   email: string;
-  DoB: string | null;
-  phoneNum: string | null;
+  DoB?: string | null;
+  phoneNum?: string | null;
   [key: string]: any;
 }
 
@@ -69,11 +69,16 @@ export const useUser = () => {
     [request]
   );
 
+  const addUser = useCallback((user: UserProfile) =>
+    request<UserProfile>(`${base}/`, { method: 'POST', body: JSON.stringify(user) }),
+  [request]);
+
   return {
     isLoading,
     error,
     getUserProfile,
     updateUserProfile,
-    changePassword
+    changePassword,
+    addUser
   };
 };

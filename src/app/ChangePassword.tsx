@@ -21,6 +21,12 @@ export default function ChangePassword() {
       Alert.alert("Lỗi", "Vui lòng nhập đầy đủ thông tin");
       return;
     }
+
+    if (newPassword.length < 6) {
+      Alert.alert("Lỗi", "Mật khẩu mới phải có ít nhất 6 ký tự");
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
       Alert.alert("Lỗi", "Mật khẩu mới và xác nhận không khớp");
       return;
