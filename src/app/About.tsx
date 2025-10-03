@@ -3,8 +3,8 @@ import { View, Text, ScrollView, Dimensions, ImageBackground, TouchableOpacity }
 import AppLogo from "../components/AppLogo";
 import { router } from "expo-router";
 import { useTheme } from "@/hooks/useTheme";
+import { useWindowDimensions } from "react-native";
 
-const { width } = Dimensions.get("window");
 const pages = [
   { title: "XỬ LÝ DỮ LIỆU", description: "Xử lý dữ liệu về tình trạng giao thông bằng những mô hình học máy, có thể kiểm chứng được tính tin cậy của dữ liệu." },
   { title: "THU THẬP THÔNG TIN", description: "Thu thập thông tin về tình trạng giao thông thời gian thực." },
@@ -15,12 +15,14 @@ const pages = [
 export default function AboutPage() {
   const scrollRef = useRef<ScrollView>(null);
   const [pageIndex, setPageIndex] = useState(0);
+  const { width } = useWindowDimensions();
+  const pageWidth = width * 0.8;
 
   const handleScroll = (event: any) => {
-    const newIndex = Math.round(event.nativeEvent.contentOffset.x / width);
+    const newIndex = Math.round(event.nativeEvent.contentOffset.x / pageWidth);
+
     setPageIndex(newIndex);
   };
-
   const { theme } = useTheme();
 
   return (
@@ -35,10 +37,10 @@ export default function AboutPage() {
         style={{ flex: 1, width: "100%", height: "100%" }}
     >
         <TouchableOpacity
-            onPress={() => router.replace("/Login")}
+            onPress={() => router.replace("/")}
             className="absolute right-10 top-10 z-10"
         >
-            <Text className="text-white text-lg underline">Skip</Text>
+            <Text className="text-black text-lg underline">Skip</Text>
         </TouchableOpacity>
         <View className="mt-16 mr-10">
             <AppLogo />
@@ -51,14 +53,15 @@ export default function AboutPage() {
             onScroll={handleScroll}
             scrollEventThrottle={16}
             ref={scrollRef}
+            snapToInterval={0.8 * width}
             className="mt-6"
             contentContainerStyle={{ alignItems: "center" }}
         >
             {pages.map((page, index) => (
             <View
                 key={index}
-                style={{ width }}
-                className="items-center justify-center px-8"
+                style={{ width:pageWidth as any }}
+                className="items-center justify-center "
             >
                 <View className="mb-6">
                 <Text className={`text-4xl font-bold mb-4 text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>

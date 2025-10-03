@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Image, ImageStyle, TextStyle } from "react-native";
+import { View, Text, Image, ImageStyle, TextStyle, Dimensions } from "react-native";
 import { useTheme } from "@/hooks/useTheme";
 
 interface AppLogoProps {
@@ -14,8 +14,8 @@ interface AppLogoProps {
 }
 
 export default function AppLogo({
-  imageWidth = "30%",
-  imageMarginRight = -15,
+  imageWidth = "80",
+  imageMarginRight = 5,
   imageAspectRatio = 1,
   textSize = 32,
   textColor,
@@ -24,6 +24,7 @@ export default function AppLogo({
   height
 }: AppLogoProps) {
   const { theme } = useTheme();
+  const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
   const finalTextColor = textColor
     ? textColor
@@ -31,29 +32,41 @@ export default function AppLogo({
     ? "#FFFFFF"
     : "#063970";
 
+    let computedHeight: number | undefined;
+    if (typeof height === "string") {
+      if (height === "auto") {
+        computedHeight = undefined;
+      } else if (height.endsWith("%")) {
+        computedHeight = (parseFloat(height) / 100) * SCREEN_HEIGHT;
+      } else {
+        computedHeight = undefined;
+      }
+    } else {
+      computedHeight = height;
+    }
   return (
     <View
-      className="h-16 flex-row items-center justify-center"
-      style={[{ height: height as any }]}
+      className="flex-row items-center justify-center"
+      style={{ height: computedHeight  }}
     >
       <Image
         source={require("../asset/logo1.png")}
         resizeMode="contain"
+        className={`mr-${Math.abs(imageMarginRight)}`}
         style={{
           width: imageWidth,
           height: undefined,
-          marginRight: imageMarginRight,
           aspectRatio: imageAspectRatio,
-          ...imageProps
+          ...imageProps,
         } as ImageStyle}
       />
       <Text
-        style={{ 
+        className="font-bold"
+        style={{
           fontSize: textSize,
           color: finalTextColor,
-          ...textProps
+          ...textProps,
         } as TextStyle}
-        className="font-bold"
       >
         SmartTraffic
       </Text>

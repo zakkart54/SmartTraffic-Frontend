@@ -25,10 +25,10 @@ export default function NotificationHandler() {
     const callNotiApi = async () => {
       if (!latestCoords) return;
       try {
-        const res = await getNotificationUsingGps(
-          latestCoords.latitude,
-          latestCoords.longitude
-        );
+        const res = await getNotificationUsingGps({
+          lat: latestCoords.latitude,
+          lon: latestCoords.longitude,
+        });
     
         const notis: any[] = Array.isArray(res?.[0]) ? res[0] : [];
     

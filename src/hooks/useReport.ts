@@ -39,7 +39,7 @@ export const useReport = () => {
             ...(accessToken ? { Authorization: accessToken } : {}),
             ...(options.headers || {}),
           },
-          timeout: 30000,
+          timeout: 10000,
         });
         return res.data as T;
       } catch (err: any) {
@@ -68,7 +68,7 @@ export const useReport = () => {
   );
 
   const getReportByUploader = useCallback(
-    (id: string) => request<ReportEntry[]>(`${base}/uploader/${id}`),
+    () => request<ReportEntry[]>(`${base}/uploader`),
     [request]
   );
 

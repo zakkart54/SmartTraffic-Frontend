@@ -56,10 +56,6 @@ export default function MapPage() {
     setKey(prev => prev + 1);
   }, []);
 
-  const getRegion = useCallback((): Region => {
-    return initialRegion;
-  }, [initialRegion]);
-
   function getZoomLevel(region: Region, mapWidthPx: number): number {
     const angle = region.longitudeDelta;
     return Math.round(Math.log2(360 * (mapWidthPx / 256 / angle)));
@@ -92,7 +88,7 @@ export default function MapPage() {
   const handleMapChangeComplete = async (region: Region) => {
     if (!mapRef.current) return;
     const zoom = getZoomLevel(region, 400);
-    if (zoom < 16) {
+    if (zoom && zoom < 16) {
       setLines([]);
       return;
     }
@@ -128,7 +124,7 @@ export default function MapPage() {
       resizeMode="cover"
       style={{ flex: 1, width: "100%", height: "100%" }}
     >
-      <View className="mt-2 mx-2">
+      <View className="mt-8 mx-2">
         <LocationSearch onLocationSelect={handleLocationSelect} apiKey={apiKey} />
       </View>
 
@@ -136,12 +132,6 @@ export default function MapPage() {
         <MapView
           style={{ flex: 1 }}
           key={key}
-          onMapReady={async () => {
-            if (mapRef.current) {
-              const region = await mapRef.current.getCamera();
-              handleMapChangeComplete(region);
-            }
-          }}
           initialRegion={initialRegion}
           zoomEnabled
           zoomControlEnabled

@@ -20,7 +20,7 @@ const SubmittedReport = () => {
     const fetchData = async () => {
       try {
         const res = await getDataByUploader();
-        const res2 = await getReportByUploader("68cea71216fb8ebbafcac086");
+        const res2 = await getReportByUploader();
         setReportData(res2);
         setData(res as any);
       } catch (error) {
@@ -147,20 +147,20 @@ const SubmittedReport = () => {
             ) : detail ? (
               <ScrollView>
                 {/* <Text className="text-black">ID: {detail.data._id}</Text> */}
-                <Text className="text-black">Loại: {detail.data.type}</Text>
+                <Text className="text-black text-lg">Loại: {detail.data.type=='image'? 'Hình ảnh' : 'Văn bản'}</Text>
 
                 {detail.data.uploadTime && (
-                  <Text className="text-black mt-2">
+                  <Text className="text-black mt-2 text-lg">
                     Thời gian: {new Date(detail.data.uploadTime).toLocaleString("vi-VN")}
                   </Text>
                 )}
 
                 {reportDetail && reportDetail?.statusID && (
                   <>
-                    <Text className="text-black mt-2">
+                    <Text className="text-black mt-2 text-lg">
                       Đánh giá: {(reportDetail.eval * 100).toFixed(0)}%
                     </Text>
-                    <Text className="text-black mt-2">
+                    <Text className="text-black mt-2 text-lg">
                       Kết quả:{" "}
                       {reportDetail.qualified ? "Đạt yêu cầu" : "Không đạt"}
                     </Text>
@@ -169,24 +169,24 @@ const SubmittedReport = () => {
 
                 {reportDetail && !reportDetail?.statusID && (
                   <>
-                    <Text className="text-black mt-2">
+                    <Text className="text-black mt-2 text-lg">
                       Đánh giá: Chưa đánh giá
                     </Text>
                   </>
                 )}
-                <Text className="text-black mt-2">
+                <Text className="text-black mt-2 text-lg">
                   Vị trí: {reportDetail.lat}, {reportDetail.lon}
                 </Text>
                 {detail.data.type === "text" && detail.content?.content && (
                   <>
-                    <Text className="text-black font-bold mt-4">Nội dung văn bản:</Text>
+                    <Text className="text-black font-bold mt-4 text-lg">Nội dung văn bản:</Text>
                     <Text className="text-black">{detail.content.content}</Text>
                   </>
                 )}
 
                 {detail.data.type === "image" && detail.content?.content && (
                   <>
-                    <Text className="text-black font-bold mt-4">Ảnh đã gửi:</Text>
+                    <Text className="text-black font-bold mt-4 text-lg">Ảnh đã gửi:</Text>
                     <Image
                       source={{ uri: `data:image/jpeg;base64,${detail.content.content}` }}
                       style={{

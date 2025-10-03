@@ -37,7 +37,7 @@ export const useReport = () => {
             ...(accessToken ? { Authorization: accessToken } : {}),
             ...(options.headers || {}),
           },
-          timeout: 30000,
+          timeout: 10000,
         });
 
         return res.data as T;

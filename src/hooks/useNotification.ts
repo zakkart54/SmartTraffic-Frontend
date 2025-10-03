@@ -107,10 +107,10 @@ export const useNotification = () => {
   [request]);
 
   const getNotificationUsingGps = useCallback(
-    (lat: number, lon: number) =>
+    (data) =>
       request<Notification[]>(`${base}/gps`, {
         method: 'POST',
-        body: JSON.stringify({ lat, lon }),
+        body: JSON.stringify(data),
       }),
     [request]
   );
@@ -122,7 +122,6 @@ export const useNotification = () => {
       }),
     [request]
   );
-
 
   return {
     isLoading,

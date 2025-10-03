@@ -130,9 +130,12 @@ export default function Header({ userName = "User", hideMenu= false }: Props) {
                 className="flex-1 justify-start items-end pt-40 mt-4 bg-transparent"
               >
                 <View className="bg-white rounded-md shadow-lg p-2 mr-2 w-40 mt-2">
-                  <TouchableOpacity onPress={handleViewInfo} className="py-2">
-                    <Text className="text-black">Xem thông tin</Text>
-                  </TouchableOpacity>
+                  {accessToken && (
+                    <TouchableOpacity onPress={handleViewInfo} className="py-2">
+                      <Text className="text-black">Xem thông tin</Text>
+                    </TouchableOpacity>
+                    )
+                  }
                   <TouchableOpacity onPress={handleSettings} className="py-2">
                     <Text className="text-black">Cài đặt</Text>
                   </TouchableOpacity>

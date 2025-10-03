@@ -52,7 +52,11 @@ export default function RegisterPage() {
       Alert.alert("Thành công", "Tạo tài khoản thành công!");
       router.replace("/Login");
     } catch (e) {
-      Alert.alert("Đăng ký thất bại", e.message || "Lỗi không xác định");
+      if (!e.message) {
+        Alert.alert("Đăng ký thất bại", "Tài khoản hoặc email đã tồn tại.");
+        return;
+      }
+      else Alert.alert("Đăng ký thất bại", e.message);
     }
   };
 

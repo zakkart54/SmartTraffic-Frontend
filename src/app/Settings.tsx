@@ -14,11 +14,13 @@ import AppLogo from "../components/AppLogo";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { router } from "expo-router";
 import { useTheme } from "@/hooks/useTheme";
+import {useAuth} from "../hooks/useAuth";
 import { useAppSettings } from "@/hooks/useAppSetting";
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
-  const { settings, updateSettings } = useAppSettings();
+  const { accessToken } = useAuth();
+  const { settings, updateSettings, toggleWatchLocation} = useAppSettings();
   const [localSettings, setLocalSettings] = useState(settings);
   const [editing, setEditing] = useState(false);
   const [notifExpanded, setNotifExpanded] = useState(true);
@@ -81,6 +83,8 @@ export default function SettingsPage() {
           </Text>
         </View>
 
+        {accessToken && (
+        <View>
         <TouchableOpacity
           onPress={() => router.push("/AccountSettings")}
           className="bg-white rounded-xl p-4 mb-6 shadow"
@@ -89,6 +93,19 @@ export default function SettingsPage() {
           <Text className="text-gray-500 text-sm mt-1">
             Xem và chỉnh sửa thông tin tài khoản của bạn
           </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="bg-white rounded-xl px-4 py-2 mb-6 shadow"
+        >
+          <View className="flex-row justify-between items-center">
+            <Text className="text-lg font-semibold">Bật theo dõi GPS</Text>
+            <Switch
+              value={localSettings.watchLocationEnabled}
+              onValueChange={toggleWatchLocation}
+            />
+          </View>
+          <Text className="text-gray-600">Giảm thời gian chờ khi gửi dữ liệu giao thông</Text>
         </TouchableOpacity>
 
         <View className="bg-white rounded-xl mb-6 shadow">
@@ -172,6 +189,9 @@ export default function SettingsPage() {
             </View>
           </Animated.View>
         </View>
+        </View>
+        )}
+
 
         <View className="bg-white rounded-xl p-4 shadow">
           <Text className="text-lg font-semibold mb-3">Giao diện</Text>

@@ -29,7 +29,7 @@
       const sub = Notifications.addNotificationResponseReceivedListener(
         (response) => {
           console.log("User tapped notification:", response.notification);
-          router.replace("/Maps");
+          router.replace("/Map");
         }
       );
       return () => {

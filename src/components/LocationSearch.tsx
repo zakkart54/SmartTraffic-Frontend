@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, FlatList, TouchableOpacity, Text } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import TextInputField from "@/components/TextInputField";
 
 const LocationSearch = ({ onLocationSelect, apiKey }) => {
   const [searchText, setSearchText] = useState('');
@@ -69,6 +71,7 @@ const LocationSearch = ({ onLocationSelect, apiKey }) => {
             searchLocation(text);
           }}
         />
+        {searchText.length == 0 && <MaterialIcons name="search" size={24} color="#9ca3af" className="absolute right-1 top-2.5"/>}
         {searchText.length > 0 && (
           <TouchableOpacity
             onPress={() => {

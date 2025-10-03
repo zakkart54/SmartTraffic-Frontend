@@ -26,13 +26,13 @@ export const useText = () => {
 
       try {
         const res = await axios<T>(url, {
-          timeout: 30000,
+          timeout: 10000,
           headers: {
             "Content-Type": "application/json",
             ...(accessToken ? { Authorization: accessToken } : {}),
             ...(options.headers || {}),
           },
-          ...options,
+          ...options
         });
 
         return res.data;

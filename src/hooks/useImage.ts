@@ -71,7 +71,7 @@ export const useImage = () => {
           const res = await axios.get(`${base}/rawFile/${entry.source}`, {
             headers: accessToken ? { Authorization: accessToken } : {},
             responseType: "blob",
-            timeout: 30000,
+            timeout: 10000,
           });
 
           return {

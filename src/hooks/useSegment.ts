@@ -34,7 +34,7 @@ export const useSegment = () => {
             ...(accessToken ? { Authorization: accessToken } : {}),
             ...(options.headers || {}),
           },
-          timeout: 30000, // 30s
+          timeout: 10000
         });
 
         if (res.data?.data && typeof res.data.data === "string") {

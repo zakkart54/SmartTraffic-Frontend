@@ -39,7 +39,7 @@ export default function NavigationBar() {
     },
     { 
       label: "Gợi ý", 
-      path: "/Suggest", 
+      path: "/About", 
       icon: theme === "dark" 
         ? require("@/asset/icons/suggest.png") 
         : require("@/asset/icons/suggest1.png") 
