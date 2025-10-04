@@ -15,8 +15,7 @@ interface Props {
 }
 
 export default function Header({ hideMenu= false }: Props) {
-  const { accessToken, username, logout } = useAuth();
-  const displayName = username || "User";
+  const { accessToken, fullName, logout } = useAuth();
 
   const [menuVisible, setMenuVisible] = useState(false);
   const [notifVisible, setNotifVisible] = useState(false);
@@ -91,7 +90,7 @@ export default function Header({ hideMenu= false }: Props) {
       </View>
       {!hideMenu && (
         <View className="flex-row items-center justify-between bg-[#edf2fc] px-4 py-5  mt-4">
-          <Text className="text-[#063970] text-xl font-semibold">Xin chào, {displayName}</Text>
+          <Text className="text-[#063970] text-xl font-semibold">Xin chào, {fullName ?? "User"}</Text>
           <View className="flex-row items-center space-x-4">
             {/* Bell */}
             <TouchableOpacity onPress={() => handleOpenNotificationMenu()} className="relative mr-4">
