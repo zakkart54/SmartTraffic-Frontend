@@ -135,7 +135,7 @@ export default function SettingsPage() {
               className="p-4"
             >
               <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                <Text style={{ color: theme === "dark" ? "#fff" : "#000", fontSize: 16 }}>Bật thông báo</Text>
+                <Text style={{ color: "#000", fontSize: 16 }}>Bật thông báo</Text>
                 <Switch
                   value={localSettings.notificationsEnabled}
                   onValueChange={(val) => handleChange("notificationsEnabled", val)}
@@ -202,7 +202,7 @@ export default function SettingsPage() {
                 theme === "light" ? "bg-blue-300 border-blue-400" : "border-gray-400"
               }`}
             />
-            <Text className="mr-6">Sáng</Text>
+            <Text className="mr-12">Sáng</Text>
 
             <TouchableOpacity
               onPress={() => setTheme("dark")}

@@ -68,15 +68,8 @@ export default function DetailStatus() {
           
 
           {/* Chi tiết tình trạng */}
-          <View className="mt-8">
+          {/* <View className="mt-8">
           <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Chi tiết tình trạng</Text>
-            {/* <View className="bg-[#edf2fc] p-4 rounded-xl mt-2 items-center">
-              <Image
-                source={statusData.image}
-                className="w-24 h-24 rounded-lg"
-                resizeMode="contain"
-              />
-            </View> */}
             <View className="bg-[#edf2fc] p-2 rounded-xl mt-2">
               <TextInput
                 value={statusData.description}
@@ -85,11 +78,18 @@ export default function DetailStatus() {
                 className="text-black text-xl p-2"
               />
             </View>
-          </View>
+          </View> */}
 
           {/* Mô tả tình trạng */}
           <View className="mt-8">
           <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Mô tả tình trạng</Text>
+            {/* <View className="bg-[#edf2fc] p-4 rounded-xl mt-2 items-center">
+              <Image
+                source={statusData.image}
+                className="w-24 h-24 rounded-lg"
+                resizeMode="contain"
+              />
+            </View> */}
             <View className="bg-[#edf2fc] p-2 rounded-xl mt-2">
               <TextInput
                 value={statusData.description}

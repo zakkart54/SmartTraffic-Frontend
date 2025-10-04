@@ -16,7 +16,7 @@ const trafficData = {
   },
   status: [
     {
-      name: 'Kẹt xe',
+      name: 'Kẹt xe trên đường Đặng Thùy Trâm',
       time: '12:30 PM',
       reliability: '90%',
       text: 'Đường đông đúc, xe cộ di chuyển chậm và có thể xảy ra ùn tắc.',
@@ -30,7 +30,7 @@ const trafficData = {
       },
     },
     {
-      name: 'Tai nạn',
+      name: 'Tai nạn trên cầu Bình Lợi',
       time: '01:15 PM',
       reliability: '40%',
       text: 'Có vụ tai nạn trên cầu Bình Lợi.',

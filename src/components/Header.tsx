@@ -8,22 +8,39 @@ import {useAuth} from "../hooks/useAuth";
 import NotificationDropdown from "../components/NotificationDropdown";
 import { useNotification } from "@/hooks/useNotification";
 import { Notification } from "../hooks/useNotification";
+import { useUser, UserProfile } from "@/hooks/useUser";
 
 interface Props {
-  userName?: string;
   status?: any[];
   hideMenu?: boolean;
 }
 
-export default function Header({ userName = "User", hideMenu= false }: Props) {
+export default function Header({ hideMenu= false }: Props) {
   const { accessToken, logout } = useAuth();
-  userName = userName || "User";
+  const { getUserProfile } = useUser();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+
   const [menuVisible, setMenuVisible] = useState(false);
   const [notifVisible, setNotifVisible] = useState(false);
   const {getNotificationByUser, processNotifications, markNotificationsAsRead} = useNotification();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [hasUnread, setHasUnread] = useState(false);
   const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    if (!accessToken) {
+      setProfile(null);
+      return;
+    }
+    (async () => {
+      try {
+        const data = await getUserProfile();
+        setProfile(data);
+      } catch (err) {
+        console.error("Failed to fetch user profile:", err);
+      }
+    })();
+  }, [accessToken]);
 
   useEffect(() => {
     if (!accessToken) return;
@@ -91,7 +108,9 @@ export default function Header({ userName = "User", hideMenu= false }: Props) {
       </View>
       {!hideMenu && (
         <View className="flex-row items-center justify-between bg-[#edf2fc] px-4 py-5  mt-4">
-          <Text className="text-[#063970] text-xl font-semibold">Xin chào, {userName}</Text>
+          <Text className="text-[#063970] text-xl font-semibold">
+            Xin chào, {accessToken ? profile?.username || "User" : "User"}
+            </Text>
           <View className="flex-row items-center space-x-4">
             {/* Bell */}
             <TouchableOpacity onPress={() => handleOpenNotificationMenu()} className="relative mr-4">
@@ -149,7 +168,7 @@ export default function Header({ userName = "User", hideMenu= false }: Props) {
                     </TouchableOpacity>
                   )
                     }
-                  <View className="flex-row items-center py-2">
+                  {/* <View className="flex-row items-center py-2">
                     <TouchableOpacity
                       onPress={() => setTheme("light")}
                       className={`w-5 h-5 rounded-full mr-2 border-2 ${
@@ -168,7 +187,7 @@ export default function Header({ userName = "User", hideMenu= false }: Props) {
                       }`}
                     />
                     <Text className="text-black">Tối</Text>
-                  </View>
+                  </View> */}
                 </View>
               </Pressable>
             </Modal>
