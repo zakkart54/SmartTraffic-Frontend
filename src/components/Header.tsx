@@ -10,14 +10,14 @@ import { useNotification } from "@/hooks/useNotification";
 import { Notification } from "../hooks/useNotification";
 
 interface Props {
-  userName?: string;
   status?: any[];
   hideMenu?: boolean;
 }
 
-export default function Header({ userName = "User", hideMenu= false }: Props) {
-  const { accessToken, logout } = useAuth();
-  userName = userName || "User";
+export default function Header({ hideMenu= false }: Props) {
+  const { accessToken, username, logout } = useAuth();
+  const displayName = username || "User";
+
   const [menuVisible, setMenuVisible] = useState(false);
   const [notifVisible, setNotifVisible] = useState(false);
   const {getNotificationByUser, processNotifications, markNotificationsAsRead} = useNotification();
@@ -91,7 +91,7 @@ export default function Header({ userName = "User", hideMenu= false }: Props) {
       </View>
       {!hideMenu && (
         <View className="flex-row items-center justify-between bg-[#edf2fc] px-4 py-5  mt-4">
-          <Text className="text-[#063970] text-xl font-semibold">Xin chào, {userName}</Text>
+          <Text className="text-[#063970] text-xl font-semibold">Xin chào, {displayName}</Text>
           <View className="flex-row items-center space-x-4">
             {/* Bell */}
             <TouchableOpacity onPress={() => handleOpenNotificationMenu()} className="relative mr-4">
@@ -149,7 +149,7 @@ export default function Header({ userName = "User", hideMenu= false }: Props) {
                     </TouchableOpacity>
                   )
                     }
-                  <View className="flex-row items-center py-2">
+                  {/* <View className="flex-row items-center py-2">
                     <TouchableOpacity
                       onPress={() => setTheme("light")}
                       className={`w-5 h-5 rounded-full mr-2 border-2 ${
@@ -168,7 +168,7 @@ export default function Header({ userName = "User", hideMenu= false }: Props) {
                       }`}
                     />
                     <Text className="text-black">Tối</Text>
-                  </View>
+                  </View> */}
                 </View>
               </Pressable>
             </Modal>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
 import TextInputField from "../components/TextInputField";
 import PrimaryButton from "../components/PrimaryButton";
 import AppLogo from "../components/AppLogo";
@@ -44,13 +44,13 @@ export default function LoginPage() {
   const { theme } = useTheme();
 
   return (
-    <View className={`flex-1 p-8 ${theme === "dark" ? "bg-[#05416C]" : "bg-[#b6d2fe]"}`}>
-      <View className="mt-16">
-        <AppLogo/>
-      </View>
-
-      <View className="flex-1 justify-evenly">
-        <View className="relative items-center mb-6 h-10 justify-center">
+    <View className={`flex-1 ${theme === "dark" ? "bg-[#05416C]" : "bg-[#b6d2fe]"}`}>
+      <ScrollView className="flex-1 p-8" contentContainerStyle={{ paddingBottom: 32 }}>
+        <View className="mt-16">
+          <AppLogo/>
+        </View>
+      
+        <View className="relative items-center mt-12 mb-9 h-10 justify-center">
           <Text className={`text-3xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Đăng nhập</Text>
         </View>
         <View className="mt-4">
@@ -67,7 +67,7 @@ export default function LoginPage() {
           {usernameError ? <Text className="text-red-500 mt-1 ml-1">{usernameError}</Text> : null}
         </View>
 
-        <View className="mt-4">
+        <View className="mt-8">
           <TextInputField
             label="Mật khẩu"
             placeholder="Nhập mật khẩu"
@@ -81,8 +81,10 @@ export default function LoginPage() {
           {passwordError ? <Text className="text-red-500 mt-1 ml-1">{passwordError}</Text> : null}
         </View>
 
-        <PrimaryButton title="Đăng nhập" disabled={false} onPress={handleLogin} />
-        <View>
+        <View className="mt-8">
+          <PrimaryButton title="Đăng nhập" disabled={false} onPress={handleLogin} />
+        </View>
+        <View className="mt-8">
           <TouchableOpacity onPress={() => router.push("/Register")}> 
           <Text className={`text-center mt-4 ${theme === "dark" ? "text-white" : "text-black"}`}>Chưa có tài khoản? Đăng ký</Text>
           </TouchableOpacity>
@@ -93,7 +95,7 @@ export default function LoginPage() {
           <Text className="text-white text-center mt-4">Bỏ qua</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }

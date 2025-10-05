@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Image, Alert, ScrollView } from "react-native";
 import TextInputField from "../components/TextInputField";
 import PrimaryButton from "../components/PrimaryButton";
 import AppLogo from "../components/AppLogo";
@@ -63,12 +63,13 @@ export default function RegisterPage() {
   const { theme } = useTheme();
 
   return (
-    <View className={`flex-1 p-8 ${theme === "dark" ? "bg-[#05416C]" : "bg-[#b6d2fe]"}`}>
-      <View className="mt-16">
-        <AppLogo />
-      </View>
-      <View className="flex-1 justify-evenly">
-        <View className="relative items-center mb-6 h-10 justify-center">
+    <View className={`flex-1 ${theme === "dark" ? "bg-[#05416C]" : "bg-[#b6d2fe]"}`}>
+      <ScrollView className="flex-1 p-8" contentContainerStyle={{ paddingBottom: 32 }}>
+        <View className="mt-16">
+          <AppLogo />
+        </View>
+
+        <View className="relative items-center mt-12 mb-6 h-10 justify-center">
           <TouchableOpacity onPress={() => router.replace("/Login")} className="absolute left-0">
             <Image
               source={require("../asset/icons/back.png")}
@@ -79,45 +80,56 @@ export default function RegisterPage() {
           <Text className={`text-3xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Đăng ký</Text>
         </View>
 
-        <TextInputField
-          label="Email"
-          placeholder="you@example.com"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          value={email}
-          onChangeText={setEmail}
-        />
+        <View className="mt-8">
+          <TextInputField
+            label="Email"
+            placeholder="you@example.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
+          />
+        </View>
 
-        <TextInputField
-          label="Tên tài khoản"
-          placeholder="Nhập tên tài khoản"
-          autoCapitalize="none"
-          value={username}
-          onChangeText={setUsername}
-        />
+        <View className="mt-8">
+          <TextInputField
+            label="Tên tài khoản"
+            placeholder="Nhập tên tài khoản"
+            autoCapitalize="none"
+            value={username}
+            onChangeText={setUsername}
+          />
+        </View>
 
-        <TextInputField
-          label="Mật khẩu"
-          placeholder="Nhập mật khẩu"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
+        <View className="mt-8">
+          <TextInputField
+            label="Mật khẩu"
+            placeholder="Nhập mật khẩu"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+        </View>
 
-        <TextInputField
-          label="Xác nhận mật khẩu"
-          placeholder="Nhập lại mật khẩu"
-          secureTextEntry
-          value={confirm}
-          onChangeText={setConfirm}
-        />
+        <View className="mt-8">
+          <TextInputField
+            label="Xác nhận mật khẩu"
+            placeholder="Nhập lại mật khẩu"
+            secureTextEntry
+            value={confirm}
+            onChangeText={setConfirm}
+          />
+        </View>
 
-        <PrimaryButton title="Tạo tài khoản" onPress={handleRegister} disabled={isLoading} />
-
+        <View className="mt-8">
+          <PrimaryButton title="Tạo tài khoản" onPress={handleRegister} disabled={isLoading} />
+        </View>
+        <View className="mt-4">
         <TouchableOpacity onPress={() => router.replace("/Login")}>
           <Text className={`text-center mt-4 ${theme === "dark" ? "text-white" : "text-black"}`}>Đã có tài khoản? Đăng nhập</Text>
         </TouchableOpacity>
-      </View>
+        </View>
+      </ScrollView>
     </View>
   );
 }

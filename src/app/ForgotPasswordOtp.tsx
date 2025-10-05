@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
 import TextInputField from "../components/TextInputField";
 import PrimaryButton from "../components/PrimaryButton";
 import AppLogo from "../components/AppLogo";
@@ -12,12 +12,12 @@ export default function PasswordForgotPage() {
   const { theme } = useTheme();
 
   return (
-    <View className={`flex-1 p-8 ${theme === "dark" ? "bg-[#05416C]" : "bg-[#b6d2fe]"}`}>
-      <View className="mt-16">
-        <AppLogo/>
-      </View>
-      <View className="flex-1 justify-evenly">
-        <View className="relative items-center mb-6 h-10 justify-center">
+    <View className={`flex-1 ${theme === "dark" ? "bg-[#05416C]" : "bg-[#b6d2fe]"}`}>
+      <ScrollView className="flex-1 p-8" contentContainerStyle={{ paddingBottom: 32 }}>
+        <View className="mt-16">
+          <AppLogo/>
+        </View>
+        <View className="relative items-center mt-12 mb-9 h-10 justify-center">
             <TouchableOpacity onPress={() => router.replace("/ForgotPassword")} className="absolute left-0">
             <Image
                 source={require("../asset/icons/back.png")}
@@ -28,16 +28,20 @@ export default function PasswordForgotPage() {
             <Text className={`text-3xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Nhập OTP</Text>
         </View>
         
-        <TextInputField
-        label="OTP"
-        placeholder="OTP"
-        autoCapitalize="none"
-        value={otp}
-        onChangeText={setOtp}
-        />
+        <View className="mt-12">
+          <TextInputField
+          label="OTP"
+          placeholder="OTP"
+          autoCapitalize="none"
+          value={otp}
+          onChangeText={setOtp}
+          />
+        </View>
 
-        <PrimaryButton title="Nhận OTP" onPress={() => router.replace("/Login")} />
-      </View>
+        <View className="mt-16">
+          <PrimaryButton title="Nhận OTP" onPress={() => router.replace("/Login")} />
+        </View>
+      </ScrollView>
     </View>
   );
 }

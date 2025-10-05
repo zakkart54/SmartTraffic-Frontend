@@ -124,8 +124,8 @@ export default function AccountSettings() {
 
   return (
     <View className={`flex-1 ${theme === "dark" ? "bg-[#05416C]" : "bg-[#b6d2fe]"}`}>
-      <View className="flex-1 px-8 pt-16 pb-10">
-        <View className="items-center">
+      <ScrollView className="flex-1 p-8" contentContainerStyle={{ paddingBottom: 32 }}>
+        <View className="items-center mt-16">
           <AppLogo />
         </View>
   
@@ -142,7 +142,7 @@ export default function AccountSettings() {
           </Text>
         </View>
   
-        <View className="bg-white rounded-xl p-4 mb-6 shadow flex-shrink">
+        <View className={`rounded-xl p-4 mb-6 shadow ${theme === "dark" ? "bg-[#1488DB]" : "bg-white"}`}>
           <TextInputField label="Email" value={email} rightIconName="lock" editable={false} />
           <TextInputField label="Tên tài khoản" value={username} rightIconName="lock" editable={false} />
   
@@ -204,7 +204,7 @@ export default function AccountSettings() {
         <View className="mt-4">
           <PrimaryButton title="Đổi mật khẩu" onPress={() => router.push("/ChangePassword")} />
         </View>
-      </View>
+      </ScrollView>
     </View>
   );  
 }

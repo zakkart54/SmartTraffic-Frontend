@@ -76,10 +76,19 @@ export const useSegment = () => {
       }),
     [request]
   );
+  const findSegmentByGPS = useCallback(
+    (lat: number, lon: number) =>
+      request<Segment>(`${base}/gps`, {
+        method: "POST",
+        data: { lat, lon },
+      }),
+    [request]
+  );
   return {
     isLoading,
     error,
-    getMapSegment
+    getMapSegment,
+    findSegmentByGPS
   };
 };
 
