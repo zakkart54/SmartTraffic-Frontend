@@ -33,7 +33,7 @@ export default function Header({ hideMenu= false }: Props) {
     setDisplayName("User");
     if (!accessToken) return;
     const loadName = async () => {
-      const name = await fetchUserFullName();
+      const name = await fetchUserFullName(null);
       setDisplayName(name);
     };
     loadName();

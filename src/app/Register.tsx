@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Image, Alert, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, Image, Alert, ScrollView, ActivityIndicator } from "react-native";
 import TextInputField from "../components/TextInputField";
 import PrimaryButton from "../components/PrimaryButton";
 import AppLogo from "../components/AppLogo";
@@ -64,17 +64,31 @@ export default function RegisterPage() {
 
   return (
     <View className={`flex-1 ${theme === "dark" ? "bg-[#05416C]" : "bg-[#b6d2fe]"}`}>
+      {isLoading && (
+        <View className="absolute top-0 left-0 right-0 bottom-0 bg-black/50 z-50 justify-center items-center">
+          <View className="bg-white rounded-2xl p-6 items-center">
+            <ActivityIndicator size="large" color="#0284c7" />
+            <Text className="text-black mt-4 text-lg font-semibold">Đang tạo tài khoản...</Text>
+          </View>
+        </View>
+      )}
+
       <ScrollView className="flex-1 p-8" contentContainerStyle={{ paddingBottom: 32 }}>
         <View className="mt-16">
           <AppLogo />
         </View>
 
         <View className="relative items-center mt-12 mb-6 h-10 justify-center">
-          <TouchableOpacity onPress={() => router.replace("/Login")} className="absolute left-0">
+          <TouchableOpacity 
+            onPress={() => router.replace("/Login")} 
+            className="absolute left-0"
+            disabled={isLoading}
+          >
             <Image
               source={require("../asset/icons/back.png")}
               className="h-6 w-6 tint-white"
               resizeMode="contain"
+              style={{ opacity: isLoading ? 0.5 : 1 }}
             />
           </TouchableOpacity>
           <Text className={`text-3xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Đăng ký</Text>
@@ -88,6 +102,7 @@ export default function RegisterPage() {
             autoCapitalize="none"
             value={email}
             onChangeText={setEmail}
+            editable={!isLoading}
           />
         </View>
 
@@ -98,6 +113,7 @@ export default function RegisterPage() {
             autoCapitalize="none"
             value={username}
             onChangeText={setUsername}
+            editable={!isLoading}
           />
         </View>
 
@@ -108,6 +124,7 @@ export default function RegisterPage() {
             secureTextEntry
             value={password}
             onChangeText={setPassword}
+            editable={!isLoading}
           />
         </View>
 
@@ -118,6 +135,7 @@ export default function RegisterPage() {
             secureTextEntry
             value={confirm}
             onChangeText={setConfirm}
+            editable={!isLoading}
           />
         </View>
 
@@ -125,9 +143,11 @@ export default function RegisterPage() {
           <PrimaryButton title="Tạo tài khoản" onPress={handleRegister} disabled={isLoading} />
         </View>
         <View className="mt-4">
-        <TouchableOpacity onPress={() => router.replace("/Login")}>
-          <Text className={`text-center mt-4 ${theme === "dark" ? "text-white" : "text-black"}`}>Đã có tài khoản? Đăng nhập</Text>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.replace("/Login")} disabled={isLoading}>
+            <Text className={`text-center mt-4 ${theme === "dark" ? "text-white" : "text-black"} ${isLoading ? "opacity-50" : ""}`}>
+              Đã có tài khoản? Đăng nhập
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>

@@ -172,57 +172,26 @@ export default function ReportPage() {
 
   const pickFile = async (mediaType: 'Images' | 'Videos') => {
     const cameraPerm = await ImagePicker.requestCameraPermissionsAsync();
-    const libraryPerm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!cameraPerm.granted || !libraryPerm.granted) {
-      Alert.alert('Yêu cầu quyền truy cập', 'Vui lòng cấp quyền để tiếp tục.');
+    if (!cameraPerm.granted) {
+      Alert.alert('Yêu cầu quyền truy cập', 'Vui lòng cấp quyền sử dụng camera để tiếp tục.');
       return;
     }
-
-    const launch = async (fromCamera: boolean) => {
-      const picker = fromCamera ? ImagePicker.launchCameraAsync : ImagePicker.launchImageLibraryAsync;
-      const options: any = {
-        mediaTypes:
-          mediaType === 'Images'
-            ? ImagePicker.MediaTypeOptions.Images
-            : ImagePicker.MediaTypeOptions.Videos,
-        quality: 0.7,
-      };
-      
-      if (mediaType === 'Videos') {
-        options.videoMaxDuration = 5;
-      }
-    
-      const result = await picker(options);
-      if (!result.canceled && result.assets?.[0].uri) {
-        setDataUri(result.assets[0].uri);
-      }
-      if (!result.canceled && result.assets?.[0].uri) {
-        setDataUri(result.assets[0].uri);
-      }
+  
+    const options: any = {
+      mediaTypes:
+        mediaType === 'Images'
+          ? ImagePicker.MediaTypeOptions.Images
+          : ImagePicker.MediaTypeOptions.Videos,
+      quality: 0.7,
     };
-
-    if (Platform.OS === 'ios') {
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options: ['Hủy', 'Chụp bằng camera', 'Chọn từ thư viện'],
-          cancelButtonIndex: 0,
-        },
-        idx => {
-          if (idx === 1) launch(true);
-          else if (idx === 2) launch(false);
-        },
-      );
-    } else {
-      Alert.alert(
-        'Chọn nguồn',
-        'Bạn muốn sử dụng hình ảnh/video từ đâu?',
-        [
-          { text: 'Camera', onPress: () => launch(true) },
-          { text: 'Thư viện', onPress: () => launch(false) },
-          { text: 'Hủy', style: 'cancel' },
-        ],
-        { cancelable: true },
-      );
+  
+    if (mediaType === 'Videos') {
+      options.videoMaxDuration = 5;
+    }
+  
+    const result = await ImagePicker.launchCameraAsync(options);
+    if (!result.canceled && result.assets?.[0].uri) {
+      setDataUri(result.assets[0].uri);
     }
   };
 
@@ -328,13 +297,13 @@ export default function ReportPage() {
         </View>
 
         {selectedType === 'image' ? (
-          <View className="bg-[#edf2fc] rounded-xl mb-4 justify-center items-center flex-1 flex">
-            <TouchableOpacity onPress={() => pickFile('Images')} className="items-center">
+          <View className="bg-[#edf2fc] rounded-xl mb-4 justify-center items-center flex-1">
+            <TouchableOpacity onPress={() => pickFile('Images')} className="items-center flex-[3] justify-center w-full">
               {dataUri ? (
                 <Image
                   source={{ uri: dataUri }}
-                  className="w-72 h-96"
-                  resizeMode="cover"
+                  className="w-72 h-full"
+                  resizeMode="contain"
                 />
               ) : (
                 <>
@@ -343,12 +312,25 @@ export default function ReportPage() {
                     className="w-16 h-16 mb-2"
                     resizeMode="contain"
                   />
-                  <Text className="text-gray-700 text-lg font-medium text-center">
+                  <Text className="text-gray-700 text-lg font-medium text-center px-4">
                     Chọn tệp ảnh tình trạng giao thông
                   </Text>
                 </>
               )}
             </TouchableOpacity>
+
+            <View className="bg-white rounded-xl mt-2 w-[100%]" style={{ height: 60 }}>
+              <TextInput
+                placeholder="Nhập mô tả tình trạng giao thông (nếu có)"
+                placeholderTextColor="#6b7280"
+                value={description}
+                onChangeText={setDescription}
+                className="text-black px-3 py-2 flex-1 text-base"
+                multiline
+                numberOfLines={2}
+                textAlignVertical="top"
+              />
+            </View>
           </View>
         ) : null}
 
@@ -371,15 +353,6 @@ export default function ReportPage() {
                   </Text>
                 </>
               )}
-              <View className="bg-[#edf2fc] rounded-xl mb-4 flex-1 flex">
-                <TextInput
-                  placeholder="Nhập mô tả tình trạng giao thông (nếu có)"
-                  placeholderTextColor="#6b7280"
-                  value={description}
-                  onChangeText={setDescription}
-                  className="text-black p-2 flex-1 text-lg"
-                />
-              </View>
             </TouchableOpacity>
           </View>
         ) : null}

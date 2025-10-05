@@ -3,8 +3,6 @@ import * as SecureStore from 'expo-secure-store';
 import { Alert } from 'react-native';
 import Constants from "expo-constants";
 import axios from "axios";
-import { useUser } from './useUser';
-import { set } from 'zod';
 
 const API_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_API_URL;
 
@@ -31,7 +29,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userFullName, setUserFullName] = useState<string | null>(null);
   const [username, setUserName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { getUserProfile } = useUser();
 
   const saveTokens = async (access: string, refresh: string, username:string) => {
     await SecureStore.setItemAsync('access', access);
@@ -111,6 +108,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = useCallback(async () => {
     await clearTokens();
   }, []);
+
+  const getUserProfile = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/user/profile`, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(accessToken ? { Authorization: accessToken } : {}),
+        },
+      });
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error ?? res.statusText);
+      }
+      const data = await res.json();
+      return data;
+    } catch (e: any) {
+      throw e;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [accessToken]);
 
   useEffect(() => {
     (async () => {

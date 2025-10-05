@@ -18,8 +18,10 @@ export default {
         },
       ],
     ],
-    name: "app",
-    slug: "app",
+    name: "SmartTraffic",
+    slug: "smarttraffic",
+    "orientation": "portrait",
+    "version": "1.0.0",
     extra: {
       EXPO_PUBLIC_API_URL: "https://api.smarttraffic.site",
       GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,

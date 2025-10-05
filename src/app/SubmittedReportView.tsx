@@ -49,7 +49,6 @@ const SubmittedReport = () => {
 
       const details = await Promise.all(detailPromises);
       
-      // Combine details
       const combinedDetail = {
         textDetail: report.dataTextID ? details[0] : null,
         imageDetail: report.dataImgID ? (report.dataTextID ? details[1] : details[0]) : null
@@ -112,7 +111,7 @@ const SubmittedReport = () => {
           </Text>
         ) : (
           reportData.map((report, index) => {
-            const { types, uploadTime, location } = getDataInfo(report);
+            const { types, uploadTime } = getDataInfo(report);
             
             return (
               <View
@@ -132,7 +131,7 @@ const SubmittedReport = () => {
                       Thời gian gửi:
                     </Text>
                     <Text className="text-base text-black">
-                      {new Date(uploadTime).toLocaleString("vi-VN")}
+                      {new Date(report.createdDate).toLocaleString("vi-VN")}
                     </Text>
                   </>
                 ) : null}
@@ -215,9 +214,9 @@ const SubmittedReport = () => {
                 {detail.textDetail && (
                   <>
                     <Text className="text-black font-bold mt-6 text-lg">Nội dung văn bản:</Text>
-                    <Text className="text-black mt-2">
+                    {/* <Text className="text-black mt-2">
                       Thời gian tải lên: {new Date(detail.textDetail.data.uploadTime).toLocaleString("vi-VN")}
-                    </Text>
+                    </Text> */}
                     {detail.textDetail.content?.content && (
                       <Text className="text-black mt-2">{detail.textDetail.content.content}</Text>
                     )}
@@ -227,9 +226,9 @@ const SubmittedReport = () => {
                 {detail.imageDetail && (
                   <>
                     <Text className="text-black font-bold mt-6 text-lg">Ảnh đã gửi:</Text>
-                    <Text className="text-black mt-2">
+                    {/* <Text className="text-black mt-2">
                       Thời gian tải lên: {new Date(detail.imageDetail.data.uploadTime).toLocaleString("vi-VN")}
-                    </Text>
+                    </Text> */}
                     {detail.imageDetail.content?.content && (
                       <Image
                         source={{ uri: `data:image/jpeg;base64,${detail.imageDetail.content.content}` }}

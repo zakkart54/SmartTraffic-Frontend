@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, Image, ScrollView, ActivityIndicator } from "react-native";
 import TextInputField from "../components/TextInputField";
 import PrimaryButton from "../components/PrimaryButton";
 import AppLogo from "../components/AppLogo";
@@ -45,6 +45,15 @@ export default function LoginPage() {
 
   return (
     <View className={`flex-1 ${theme === "dark" ? "bg-[#05416C]" : "bg-[#b6d2fe]"}`}>
+      {isLoading && (
+        <View className="absolute top-0 left-0 right-0 bottom-0 bg-black/50 z-50 justify-center items-center">
+          <View className="bg-white rounded-2xl p-6 items-center">
+            <ActivityIndicator size="large" color="#0284c7" />
+            <Text className="text-black mt-4 text-lg font-semibold">Đang đăng nhập...</Text>
+          </View>
+        </View>
+      )}
+      
       <ScrollView className="flex-1 p-8" contentContainerStyle={{ paddingBottom: 32 }}>
         <View className="mt-16">
           <AppLogo/>
@@ -63,6 +72,7 @@ export default function LoginPage() {
               setUsername(text);
               if (usernameError) setUsernameError("");
             }}
+            editable={!isLoading}
           />
           {usernameError ? <Text className="text-red-500 mt-1 ml-1">{usernameError}</Text> : null}
         </View>
@@ -77,22 +87,29 @@ export default function LoginPage() {
               setPassword(text);
               if (passwordError) setPasswordError("");
             }}
+            editable={!isLoading}
           />
           {passwordError ? <Text className="text-red-500 mt-1 ml-1">{passwordError}</Text> : null}
         </View>
 
         <View className="mt-8">
-          <PrimaryButton title="Đăng nhập" disabled={false} onPress={handleLogin} />
+          <PrimaryButton title="Đăng nhập" disabled={isLoading} onPress={handleLogin} />
         </View>
         <View className="mt-8">
-          <TouchableOpacity onPress={() => router.push("/Register")}> 
-          <Text className={`text-center mt-4 ${theme === "dark" ? "text-white" : "text-black"}`}>Chưa có tài khoản? Đăng ký</Text>
+          <TouchableOpacity onPress={() => router.push("/Register")} disabled={isLoading}> 
+            <Text className={`text-center mt-4 ${theme === "dark" ? "text-white" : "text-black"} ${isLoading ? "opacity-50" : ""}`}>
+              Chưa có tài khoản? Đăng ký
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("/ForgotPassword")}> 
-          <Text className={`text-center mt-4 ${theme === "dark" ? "text-white" : "text-black"}`}>Quên mật khẩu?</Text>
+          <TouchableOpacity onPress={() => router.push("/ForgotPassword")} disabled={isLoading}> 
+            <Text className={`text-center mt-4 ${theme === "dark" ? "text-white" : "text-black"} ${isLoading ? "opacity-50" : ""}`}>
+              Quên mật khẩu?
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("/")}> 
-          <Text className="text-white text-center mt-4">Bỏ qua</Text>
+          <TouchableOpacity onPress={() => router.push("/")} disabled={isLoading}> 
+            <Text className={`text-white text-center mt-4 ${isLoading ? "opacity-50" : ""}`}>
+              Bỏ qua
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
