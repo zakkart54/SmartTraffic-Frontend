@@ -49,7 +49,7 @@ export default function ReportPage() {
   const [dataUri, setDataUri] = useState<string | null>(null);
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recorderState = useAudioRecorderState(recorder);
-  // const [description, setDescription] = useState('');
+  const [description, setDescription] = useState('');
   // const [location, setLocation] = useState(null);
   const player = useAudioPlayer({ uri: dataUri || '' });
   const [isLoading, setIsLoading] = useState(false);
@@ -250,7 +250,7 @@ export default function ReportPage() {
       return;
     }
     try {
-      if (selectedType=='image') {
+      if (selectedType=='image' && !description) {
         const data = await addImageData(dataUri);
         await addReport({
           dataImgID: data.dataID,
@@ -258,6 +258,18 @@ export default function ReportPage() {
           lon: location[1],
         });
         Alert.alert('Thành công', 'Hình ảnh đã được gửi.');
+      }
+      else if (selectedType === 'image' && description) {
+        const [data1, data2] = await Promise.all([
+          addImageData(dataUri),
+          addTextData(description),
+        ]);
+        await addReport({
+          dataImgID: data1.dataID,
+          dataTextID: data2.dataID,
+          lat: location[0],
+          lon: location[1],
+        });
       }
       else if (selectedType === 'text') {
         const data = await addTextData(dataUri);
@@ -359,6 +371,15 @@ export default function ReportPage() {
                   </Text>
                 </>
               )}
+              <View className="bg-[#edf2fc] rounded-xl mb-4 flex-1 flex">
+                <TextInput
+                  placeholder="Nhập mô tả tình trạng giao thông (nếu có)"
+                  placeholderTextColor="#6b7280"
+                  value={description}
+                  onChangeText={setDescription}
+                  className="text-black p-2 flex-1 text-lg"
+                />
+              </View>
             </TouchableOpacity>
           </View>
         ) : null}
