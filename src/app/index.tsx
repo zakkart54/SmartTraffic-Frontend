@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSettings } from '@/hooks/useAppSetting';
 import { useSegment } from "@/hooks/useSegment";
+import * as Location from 'expo-location';
 
 const trafficData = {
   // location: {
@@ -64,23 +65,61 @@ export default function HomePage() {
     longitudeDir: string;
   } | null>(null);
 
+  const [permission, setPermission] = useState('granted');
+
   useEffect(() => {
-    if (!location) return;
-    const [lat, lon] = location;
+    async function getLocation() {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          setPermission('denied');
+          return;
+        }
+        setPermission("granted");
+        const location = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+        });
+      
+        const { latitude, longitude } = location.coords;
+  
+        const latitudeDir = latitude >= 0 ? "Bắc" : "Nam";
+        const longitudeDir = longitude >= 0 ? "Đông" : "Tây";
+  
+        setCoords({
+          latitude: Math.abs(latitude).toFixed(6),
+          longitude: Math.abs(longitude).toFixed(6),
+          latitudeDir,
+          longitudeDir,
+        });
+        return [latitude, longitude];
+      } catch (err: any) {
+        setPermission('denied');
+        console.warn("Lỗi khi lấy vị trí:", err.message);
+      }
+    }
+    async function handleLocation() {
+      if (location) {
+        const [lat, lon] = location;
 
-    // Xác định hướng Đông/Tây & Bắc/Nam
-    const latitudeDir = lat >= 0 ? "Bắc" : "Nam";
-    const longitudeDir = lon >= 0 ? "Đông" : "Tây";
+        const latitudeDir = lat >= 0 ? "Bắc" : "Nam";
+        const longitudeDir = lon >= 0 ? "Đông" : "Tây";
 
-    setCoords({
-      latitude: `${Math.abs(lat).toFixed(4)}°`,
-      longitude: `${Math.abs(lon).toFixed(4)}°`,
-      latitudeDir,
-      longitudeDir,
-    });
+        setCoords({
+          latitude: `${Math.abs(lat).toFixed(4)}°`,
+          longitude: `${Math.abs(lon).toFixed(4)}°`,
+          latitudeDir,
+          longitudeDir,
+        });
+        return [lat, lon];
+      } else {
+        const [lat,lon]= await getLocation();
+        return [lat, lon];
+      }
+    }
 
     (async () => {
       try {
+        const [lat,lon] = await handleLocation();
         const segment = await findSegmentByGPS(lat, lon);
         const streetName = segment?.tags?.name;
         if (streetName) {
@@ -111,7 +150,11 @@ export default function HomePage() {
             <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Vị trí hiện tại</Text>
 
             <View className="bg-[#edf2fc] p-8 rounded-2xl mt-4">
-              {coords ? (
+              {permission === "denied" ? (
+                <Text className="text-center text-lg text-red-600">
+                  Không thể lấy vị trí — bạn chưa cấp quyền truy cập vị trí.
+                </Text>
+              ) : coords ? (
                 <>
                   <View className="flex-row justify-between">
                     <View className="items-center mt-2">
