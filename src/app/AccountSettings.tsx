@@ -8,10 +8,12 @@ import PrimaryButton from "../components/PrimaryButton";
 import DateTimeInputField from "@/components/DateTimeInputField";
 import { useTheme } from "@/hooks/useTheme";
 import { useUser, UserProfile } from "@/hooks/useUser";
+import {useAuth} from "../hooks/useAuth";
 
 export default function AccountSettings() {
   const { theme } = useTheme();
   const { getUserProfile, updateUserProfile, isLoading } = useUser();
+  const { fetchUserFullName } = useAuth();
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [email, setEmail] = useState("");
@@ -43,6 +45,7 @@ export default function AccountSettings() {
         setFullName(data.fullName ?? "");
         setDoB(data.DoB ? formatDate(data.DoB) : "");
         setPhoneNum(data.phoneNum ?? "");
+        fetchUserFullName(data.fullName);
       } catch (err) {
         console.error("Lỗi lấy profile:", err);
       }

@@ -15,16 +15,30 @@ interface Props {
 }
 
 export default function Header({ hideMenu= false }: Props) {
-  const { accessToken, username, logout } = useAuth();
-  const displayName = username || "User";
+  const { accessToken, userFullName, fetchUserFullName, logout } = useAuth();
+  const [displayName, setDisplayName] = useState("User");
 
   const [menuVisible, setMenuVisible] = useState(false);
   const [notifVisible, setNotifVisible] = useState(false);
   const {getNotificationByUser, processNotifications, markNotificationsAsRead} = useNotification();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [hasUnread, setHasUnread] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
 
+  useEffect(() => {
+    if (userFullName) {
+      setDisplayName(userFullName);
+      return;
+    }
+    setDisplayName("User");
+    if (!accessToken) return;
+    const loadName = async () => {
+      const name = await fetchUserFullName();
+      setDisplayName(name);
+    };
+    loadName();
+  }, [userFullName]);
+  
   useEffect(() => {
     if (!accessToken) return;
     const fetchNotifications = async () => {

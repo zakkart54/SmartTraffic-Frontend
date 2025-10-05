@@ -3,6 +3,8 @@ import * as SecureStore from 'expo-secure-store';
 import { Alert } from 'react-native';
 import Constants from "expo-constants";
 import axios from "axios";
+import { useUser } from './useUser';
+import { set } from 'zod';
 
 const API_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_API_URL;
 
@@ -14,34 +16,47 @@ type LoginResponse = {
 interface AuthContextType {
   accessToken: string | null;
   isLoading: boolean;
-  username: string | null;
+  userFullName: string | null;
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
+  fetchUserFullName: (name?:string | null) => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
+  const [userFullName, setUserFullName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { getUserProfile } = useUser();
 
-  const saveTokens = async (access: string, refresh: string, username: string) => {
+  const saveTokens = async (access: string, refresh: string) => {
     await SecureStore.setItemAsync('access', access);
     await SecureStore.setItemAsync('refresh', refresh);
-    await SecureStore.setItemAsync('username', username);
     setAccessToken(access);
-    setUsername(username);
   };
 
   const clearTokens = async () => {
     await SecureStore.deleteItemAsync('access');
     await SecureStore.deleteItemAsync('refresh');
-    await SecureStore.deleteItemAsync('username');
+    setUserFullName(null);
     setAccessToken(null);
-    setUsername(null);
   };
+
+  const fetchUserFullName = useCallback(async (name?:string) => {
+    if (name) {
+      setUserFullName(name);
+      return;
+    }
+    if (!accessToken) {
+      setUserFullName(null);
+      return null;
+    }
+    const profile = await getUserProfile();
+    setUserFullName(profile.fullName);
+    return profile.fullName;
+  },[]);
 
   const login = useCallback(
     async (username: string, password: string) => {
@@ -56,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
 
         const data = res.data;
-        await saveTokens(data.access_token, data.refresh_token, username);
+        await saveTokens(data.access_token, data.refresh_token);
         return true;
       } catch (e: any) {
         const message = e.response?.data?.error || e.message || "Đăng nhập thất bại";
@@ -82,7 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       );
 
       const data = res.data;
-      await saveTokens(data.access_token, refreshToken, username);
+      await saveTokens(data.access_token, refreshToken);
     } catch {
       await logout();
     }
@@ -98,7 +113,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const storedUsername = await SecureStore.getItemAsync('username');
       if (existingAccess) {
         setAccessToken(existingAccess);
-        if (storedUsername) setUsername(storedUsername);
       } else {
         await refresh();
       }
@@ -108,7 +122,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value: AuthContextType = {
     accessToken,
     isLoading,
-    username,
+    userFullName,
+    fetchUserFullName,
     login,
     logout,
     refresh
