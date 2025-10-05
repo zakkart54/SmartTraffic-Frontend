@@ -20,6 +20,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
   fetchUserFullName: (name?:string | null) => Promise<string | null>;
+  checkLoggedIn?: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -50,15 +51,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (name) {
       setUserFullName(name);
       return;
-    }
+    } 
+    if (userFullName) return userFullName;
     if (!accessToken) {
-      setUserFullName(null);
-      return null;
+      const token = await SecureStore.getItemAsync('access');
+      if (token) {
+        setAccessToken(token);
+      } else {
+        setUserFullName(null);
+        return null;
+      }
     }
     const profile = await getUserProfile();
     setUserFullName(profile.fullName);
     return profile.fullName;
   },[]);
+
+  const checkLoggedIn = useCallback(async () => {
+    const existingAccess = await SecureStore.getItemAsync('access');
+    if (existingAccess) {
+      setAccessToken(existingAccess);
+      return true;
+    } else {
+      return false;
+    }
+  }, []);
 
   const login = useCallback(
     async (username: string, password: string) => {
@@ -111,11 +128,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const getUserProfile = useCallback(async () => {
     setIsLoading(true);
+    const token = accessToken || await SecureStore.getItemAsync('access');
+    if (!token) return null;
     try {
       const res = await fetch(`${API_URL}/user/profile`, {
         headers: {
           'Content-Type': 'application/json',
-          ...(accessToken ? { Authorization: accessToken } : {}),
+          ...(token ? { Authorization: token } : {}),
         },
       });
       if (!res.ok) {
@@ -148,6 +167,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isLoading,
     userFullName,
     fetchUserFullName,
+    checkLoggedIn,
     username,
     login,
     logout,

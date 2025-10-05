@@ -147,7 +147,7 @@ const SubmittedReport = () => {
                   Trạng thái:
                 </Text>
                 <Text className="text-base text-black">
-                  {report.statusID ? (
+                  {report.eval ? (
                     <>
                       Đánh giá: {(report.eval * 100).toFixed(0)}% - {report.qualified ? "Đạt yêu cầu" : "Không đạt"}
                     </>
@@ -244,7 +244,7 @@ const SubmittedReport = () => {
                   </>
                 )}
 
-                {(detail.textDetail?.status?.statuses || detail.imageDetail?.status?.statuses) && (
+                {(detail.textDetail?.status?.statuses || detail.imageDetail?.status?.statuses) && reportDetail.eval >0.8 && (
                   <>
                     <Text className="text-black font-bold mt-6 text-lg">Kết quả xử lý:</Text>
                     {Object.entries(

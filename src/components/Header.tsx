@@ -15,7 +15,7 @@ interface Props {
 }
 
 export default function Header({ hideMenu= false }: Props) {
-  const { accessToken, userFullName, fetchUserFullName, logout } = useAuth();
+  const { accessToken, userFullName, fetchUserFullName, logout, checkLoggedIn } = useAuth();
   const [displayName, setDisplayName] = useState("User");
 
   const [menuVisible, setMenuVisible] = useState(false);
@@ -26,18 +26,28 @@ export default function Header({ hideMenu= false }: Props) {
   const { theme } = useTheme();
 
   useEffect(() => {
-    if (userFullName) {
-      setDisplayName(userFullName);
-      return;
-    }
-    setDisplayName("User");
-    if (!accessToken) return;
-    const loadName = async () => {
-      const name = await fetchUserFullName(null);
-      setDisplayName(name);
+    const init = async () => {
+      if (userFullName) {
+        setDisplayName(userFullName);
+        return;
+      }
+      const isLoggedIn = await checkLoggedIn();
+  
+      if (isLoggedIn) {
+        if (userFullName) {
+          setDisplayName(userFullName);
+          return;
+        }
+        const name = await fetchUserFullName(null);
+        setDisplayName(name);
+      } else {
+        setDisplayName("User");
+      }
     };
-    loadName();
+  
+    init();
   }, [userFullName]);
+  
   
   useEffect(() => {
     if (!accessToken) return;
@@ -100,7 +110,7 @@ export default function Header({ hideMenu= false }: Props) {
 
   return (
     <View className={theme === "dark" ? "bg-[#063970]" : "bg-[#b6d2fe]"}>
-      <View className="mt-16">
+      <View className="mt-6">
           <AppLogo imageWidth={80} imageMarginRight={5} height={50}/>
       </View>
       {!hideMenu && (

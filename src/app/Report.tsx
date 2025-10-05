@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,11 +7,10 @@ import {
   TextInput,
   Image,
   Alert,
-  ActionSheetIOS,
-  Platform,
+  KeyboardAvoidingView,
   ActivityIndicator,
   Linking,
-  ScrollView
+  Keyboard
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
@@ -60,8 +59,20 @@ export default function ReportPage() {
   const { addReport } = useReport();
   // const { addImage, isLoading} = useImage();
 
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const show = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
+    const hide = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
+
   useEffect(() => {
     setDataUri('');
+    setDescription('');
   }, [selectedType]);
 
   const fetchGPS = async () => {
@@ -274,9 +285,13 @@ export default function ReportPage() {
       style={{ flex: 1 }}
     >
       <Header hideMenu={true}/>
-      {/* <ScrollView contentContainerStyle={{ paddingBottom: 32 }}> */}
-      <View className="flex-1 px-4 pt-8 mt-4 justify-between h-screen">
 
+      {/* <ScrollView> */}
+      <View className="flex-1 px-4 pt-8 mt-4 justify-between h-screen">
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={'height'}
+        >
         <View className="mt-4 mb-2">
         <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Gửi tình trạng</Text>
         </View>
@@ -319,7 +334,7 @@ export default function ReportPage() {
               )}
             </TouchableOpacity>
 
-            <View className="bg-white rounded-xl mt-2 w-[100%]" style={{ height: 60 }}>
+            <View className="bg-white rounded-bl-xl rounded-br-xl mt-2 w-[100%]" style={{ height: 40 }}>
               <TextInput
                 placeholder="Nhập mô tả tình trạng giao thông (nếu có)"
                 placeholderTextColor="#6b7280"
@@ -421,6 +436,7 @@ export default function ReportPage() {
             <Text className="text-white text-sm font-bold">GPS</Text>
           </TouchableOpacity>
         </View> */}
+        </KeyboardAvoidingView>
 
         <View className="mb-4 px-16">
           <PrimaryButton title="Gửi tình trạng" loadingTitle = "Đang gửi dữ liệu" onPress={handleSubmit} disabled={isLoading}/>
@@ -433,8 +449,7 @@ export default function ReportPage() {
           <Text className="text-white mt-2">Đang gửi dữ liệu...</Text>
         </View>
       ) : null}
-      <NavigationBar />
-
+      {!keyboardVisible && <NavigationBar />}
     </ImageBackground>
   );
 }
