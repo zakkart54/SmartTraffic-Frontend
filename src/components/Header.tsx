@@ -8,7 +8,6 @@ import {useAuth} from "../hooks/useAuth";
 import NotificationDropdown from "../components/NotificationDropdown";
 import { useNotification } from "@/hooks/useNotification";
 import { Notification } from "../hooks/useNotification";
-import { useUser, UserProfile } from "@/hooks/useUser";
 
 interface Props {
   status?: any[];
@@ -16,9 +15,8 @@ interface Props {
 }
 
 export default function Header({ hideMenu= false }: Props) {
-  const { accessToken, logout } = useAuth();
-  const { getUserProfile } = useUser();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const { accessToken, username, logout } = useAuth();
+  const displayName = username || "User";
 
   const [menuVisible, setMenuVisible] = useState(false);
   const [notifVisible, setNotifVisible] = useState(false);
@@ -26,21 +24,6 @@ export default function Header({ hideMenu= false }: Props) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [hasUnread, setHasUnread] = useState(false);
   const { theme, setTheme } = useTheme();
-
-  useEffect(() => {
-    if (!accessToken) {
-      setProfile(null);
-      return;
-    }
-    (async () => {
-      try {
-        const data = await getUserProfile();
-        setProfile(data);
-      } catch (err) {
-        console.error("Failed to fetch user profile:", err);
-      }
-    })();
-  }, [accessToken]);
 
   useEffect(() => {
     if (!accessToken) return;
@@ -108,9 +91,7 @@ export default function Header({ hideMenu= false }: Props) {
       </View>
       {!hideMenu && (
         <View className="flex-row items-center justify-between bg-[#edf2fc] px-4 py-5  mt-4">
-          <Text className="text-[#063970] text-xl font-semibold">
-            Xin chào, {accessToken ? profile?.username || "User" : "User"}
-            </Text>
+          <Text className="text-[#063970] text-xl font-semibold">Xin chào, {displayName}</Text>
           <View className="flex-row items-center space-x-4">
             {/* Bell */}
             <TouchableOpacity onPress={() => handleOpenNotificationMenu()} className="relative mr-4">

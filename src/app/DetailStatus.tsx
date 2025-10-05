@@ -89,15 +89,33 @@ export default function DetailStatus() {
                 className="w-24 h-24 rounded-lg"
                 resizeMode="contain"
               />
-            </View> */}
+            </View>
             <View className="bg-[#edf2fc] p-2 rounded-xl mt-2">
               <TextInput
-                value={statusData.description}
+                value={statusData.text}
                 editable={false}
                 multiline
                 className="text-black text-xl p-2"
               />
-            </View>
+            </View> */}
+            {(!statusData.text || statusData.text.trim() === "") && statusData.image ? (
+              <View className="bg-[#edf2fc] p-4 rounded-xl mt-2 items-center">
+                <Image
+                  source={statusData.image}
+                  className="w-72 h-72 rounded-lg"
+                  resizeMode="cover"
+                />
+              </View>
+            ) : (
+              <View className="bg-[#edf2fc] p-2 rounded-xl mt-2">
+                <TextInput
+                  value={statusData.text}
+                  editable={false}
+                  multiline
+                  className="text-black text-xl p-2"
+                />
+              </View>
+            )}
           </View>
 
           {/* Vị trí phát hiện */}
@@ -106,15 +124,15 @@ export default function DetailStatus() {
             <View className="bg-[#edf2fc] p-8 rounded-2xl mt-4">
               <View className="flex-row justify-between">
                 <View className="items-center mt-2">
-                  <Text className="text-[#063970] text-xl">Kinh độ</Text>
-                  <Text className="text-[#063970] text-3xl font-bold">{statusData.location.longitude}</Text>
-                  <Text className="text-[#063970] text-xl">{statusData.location.longitudeDir}</Text>
-                </View>
-
-                <View className="items-center mt-2">
                   <Text className="text-[#063970] text-xl">Vĩ độ</Text>
                   <Text className="text-[#063970] text-3xl font-bold">{statusData.location.latitude}</Text>
                   <Text className="text-[#063970] text-xl">{statusData.location.latitudeDir}</Text>
+                </View>
+
+                <View className="items-center mt-2">
+                  <Text className="text-[#063970] text-xl">Kinh độ</Text>
+                  <Text className="text-[#063970] text-3xl font-bold">{statusData.location.longitude}</Text>
+                  <Text className="text-[#063970] text-xl">{statusData.location.longitudeDir}</Text>
                 </View>
               </View>
               <View className="items-center mt-2">
