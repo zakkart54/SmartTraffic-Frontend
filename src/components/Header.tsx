@@ -192,6 +192,7 @@ export default function Header({ hideMenu= false }: Props) {
               onClose={() => setNotifVisible(false)}
               notifications={notifications}
               onOpenStatus={openStatus}
+              hasUnread={hasUnread}
             />
           </View>
         </View>)}

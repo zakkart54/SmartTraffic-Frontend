@@ -21,7 +21,7 @@ export default {
     name: "app",
     slug: "app",
     extra: {
-      EXPO_PUBLIC_API_URL: "https://smarttraffic.site",
+      EXPO_PUBLIC_API_URL: "https://api.smarttraffic.site",
       GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
       eas: {
         projectId: "cc3638b0-6e4d-4b81-b24f-8a4c4c5e985f",

@@ -17,6 +17,7 @@ interface AuthContextType {
   accessToken: string | null;
   isLoading: boolean;
   userFullName: string | null;
+  username: string | null;
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
@@ -28,20 +29,24 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [userFullName, setUserFullName] = useState<string | null>(null);
+  const [username, setUserName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { getUserProfile } = useUser();
 
-  const saveTokens = async (access: string, refresh: string) => {
+  const saveTokens = async (access: string, refresh: string, username:string) => {
     await SecureStore.setItemAsync('access', access);
     await SecureStore.setItemAsync('refresh', refresh);
+    await SecureStore.setItemAsync('username', username);
     setAccessToken(access);
   };
 
   const clearTokens = async () => {
     await SecureStore.deleteItemAsync('access');
     await SecureStore.deleteItemAsync('refresh');
+    await SecureStore.deleteItemAsync('username');
     setUserFullName(null);
     setAccessToken(null);
+    setUserName(null);
   };
 
   const fetchUserFullName = useCallback(async (name?:string) => {
@@ -71,7 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
 
         const data = res.data;
-        await saveTokens(data.access_token, data.refresh_token);
+        await saveTokens(data.access_token, data.refresh_token, username);
         return true;
       } catch (e: any) {
         const message = e.response?.data?.error || e.message || "Đăng nhập thất bại";
@@ -97,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       );
 
       const data = res.data;
-      await saveTokens(data.access_token, refreshToken);
+      await saveTokens(data.access_token, refreshToken, username);
     } catch {
       await logout();
     }
@@ -124,6 +129,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isLoading,
     userFullName,
     fetchUserFullName,
+    username,
     login,
     logout,
     refresh

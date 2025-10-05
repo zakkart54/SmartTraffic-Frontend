@@ -38,7 +38,7 @@ const trafficData = {
       time: '01:15 PM',
       reliability: '40%',
       text: '',
-      image: require('@/asset/detailimage.png'),
+      // image: require('@/asset/detailimage.png'),
       description: 'Tai nạn giao thông, gây ùn tắc nhẹ.',
       location: {
         longitude: '10.8300°',

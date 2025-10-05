@@ -8,12 +8,12 @@ import { useReport } from '@/hooks/useReport';
 
 const SubmittedReport = () => {
   const { getDataDetail, getDataByUploader, isLoading } = useData();
-  const { getReportByUploader, isLoading:isLoading2} = useReport();
+  const { getReportByUploader, isLoading:isLoading2 } = useReport();
   const [data, setData] = useState<any[]>([]);
   const [reportData, setReportData] = useState<any[]>([]);
   const [reportDetail, setReportDetail] = useState<any>({});
   const [modalVisible, setModalVisible] = useState(false);
-  const [detail, setDetail] = useState<any>({});
+  const [detail, setDetail] = useState<any>(null);
   const [loadingDetail, setLoadingDetail] = useState(true);
 
   useEffect(() => {
@@ -30,14 +30,32 @@ const SubmittedReport = () => {
     fetchData();
   }, []);
 
-  const openDetailModal = async (item: any) => {
+  const openDetailModal = async (report: any) => {
     setModalVisible(true);
     setLoadingDetail(true);
     setDetail(null);
+    setReportDetail(report);
+
     try {
-      setReportDetail(reportData.find( (r) => r.dataTextID === item._id || r.dataImgID === item._id  ));
-      const res = await getDataDetail(item._id);
-      setDetail(res);
+      const detailPromises = [];
+      
+      if (report.dataTextID) {
+        detailPromises.push(getDataDetail(report.dataTextID));
+      }
+      
+      if (report.dataImgID) {
+        detailPromises.push(getDataDetail(report.dataImgID));
+      }
+
+      const details = await Promise.all(detailPromises);
+      
+      // Combine details
+      const combinedDetail = {
+        textDetail: report.dataTextID ? details[0] : null,
+        imageDetail: report.dataImgID ? (report.dataTextID ? details[1] : details[0]) : null
+      };
+      
+      setDetail(combinedDetail);
     } catch (err) {
       console.error("Error fetching detail:", err);
     } finally {
@@ -46,6 +64,20 @@ const SubmittedReport = () => {
   };
 
   const { theme } = useTheme();
+
+  const getDataInfo = (report: any) => {
+    const textData = data.find(d => d._id === report.dataTextID);
+    const imageData = data.find(d => d._id === report.dataImgID);
+    
+    const types = [];
+    if (textData) types.push('Văn bản');
+    if (imageData) types.push('Hình ảnh');
+    
+    const uploadTime = textData?.uploadTime || imageData?.uploadTime;
+    const location = textData?.location || imageData?.location;
+    
+    return { types, uploadTime, location };
+  };
 
   return (
     <ImageBackground
@@ -70,7 +102,7 @@ const SubmittedReport = () => {
 
         {isLoading || isLoading2 ? (
           <ActivityIndicator size="large" color="#ffffff" />
-        ) : data.length === 0 ? (
+        ) : reportData.length === 0 ? (
           <Text
             className={`text-center ${
               theme === "dark" ? "text-white" : "text-black"
@@ -79,54 +111,63 @@ const SubmittedReport = () => {
             Chưa có thông tin nào được gửi.
           </Text>
         ) : (
-          data.map((tmp, index) => (
-            <View
-              key={index}
-              className="bg-white p-4 rounded-2xl shadow-md mb-4"
-            >
-              <Text className="text-lg font-semibold text-black mb-2">
-                Loại thông tin đã gửi:
-              </Text>
-              <Text className="text-black">
-                {tmp.type == "image"
-                  ? "Hình ảnh"
-                  : tmp.type == "video"
-                  ? "Video"
-                  : tmp.type == "text"
-                  ? "Văn bản"
-                  : "Giọng nói"}
-              </Text>
-
-              {tmp.uploadTime ? (
-                <>
-                  <Text className="text-lg font-semibold text-black mt-4">
-                    Thời gian gửi:
-                  </Text>
-                  <Text className="text-base text-black">
-                    {new Date(tmp.uploadTime).toLocaleString("vi-VN")}
-                  </Text>
-                </>
-              ) : null}
-
-              {tmp.location ? (
-                <>
-                  <Text className="text-lg font-semibold text-black mt-4">
-                    Vị trí:
-                  </Text>
-                  <Text className="text-base text-black">{tmp.location}</Text>
-                </>
-              ) : null}
-
-              <TouchableOpacity
-                className="mt-4 bg-blue-500 px-4 py-2 rounded-xl"
-                onPress={() => {
-                  openDetailModal(tmp);
-                }}
+          reportData.map((report, index) => {
+            const { types, uploadTime, location } = getDataInfo(report);
+            
+            return (
+              <View
+                key={index}
+                className="bg-white p-4 rounded-2xl shadow-md mb-4"
               >
-                <Text className="text-white text-center">Xem chi tiết</Text>
-              </TouchableOpacity>
-            </View>
-          ))
+                <Text className="text-lg font-semibold text-black mb-2">
+                  Loại thông tin đã gửi:
+                </Text>
+                <Text className="text-black">
+                  {types.join(' + ')}
+                </Text>
+
+                {uploadTime ? (
+                  <>
+                    <Text className="text-lg font-semibold text-black mt-4">
+                      Thời gian gửi:
+                    </Text>
+                    <Text className="text-base text-black">
+                      {new Date(uploadTime).toLocaleString("vi-VN")}
+                    </Text>
+                  </>
+                ) : null}
+
+                <Text className="text-lg font-semibold text-black mt-4">
+                  Vị trí:
+                </Text>
+                <Text className="text-base text-black">
+                  {report.lat}, {report.lon}
+                </Text>
+
+                <Text className="text-lg font-semibold text-black mt-4">
+                  Trạng thái:
+                </Text>
+                <Text className="text-base text-black">
+                  {report.statusID ? (
+                    <>
+                      Đánh giá: {(report.eval * 100).toFixed(0)}% - {report.qualified ? "Đạt yêu cầu" : "Không đạt"}
+                    </>
+                  ) : (
+                    "Chưa đánh giá"
+                  )}
+                </Text>
+
+                <TouchableOpacity
+                  className="mt-4 bg-blue-500 px-4 py-2 rounded-xl"
+                  onPress={() => {
+                    openDetailModal(report);
+                  }}
+                >
+                  <Text className="text-white text-center">Xem chi tiết</Text>
+                </TouchableOpacity>
+              </View>
+            );
+          })
         )}
       </ScrollView>
 
@@ -146,64 +187,94 @@ const SubmittedReport = () => {
               <ActivityIndicator size="large" color="#000" />
             ) : detail ? (
               <ScrollView>
-                {/* <Text className="text-black">ID: {detail.data._id}</Text> */}
-                <Text className="text-black text-lg">Loại: {detail.data.type=='image'? 'Hình ảnh' : 'Văn bản'}</Text>
+                <Text className="text-black text-lg font-semibold">Thông tin báo cáo:</Text>
+                
+                <Text className="text-black mt-2 text-lg">
+                  Vị trí: {reportDetail.lat}, {reportDetail.lon}
+                </Text>
 
-                {detail.data.uploadTime && (
-                  <Text className="text-black mt-2 text-lg">
-                    Thời gian: {new Date(detail.data.uploadTime).toLocaleString("vi-VN")}
-                  </Text>
-                )}
+                <Text className="text-black mt-2 text-lg">
+                  Thời gian tạo: {new Date(reportDetail.createdDate).toLocaleString("vi-VN")}
+                </Text>
 
-                {reportDetail && reportDetail?.statusID && (
+                {reportDetail?.statusID ? (
                   <>
                     <Text className="text-black mt-2 text-lg">
                       Đánh giá: {(reportDetail.eval * 100).toFixed(0)}%
                     </Text>
                     <Text className="text-black mt-2 text-lg">
-                      Kết quả:{" "}
-                      {reportDetail.qualified ? "Đạt yêu cầu" : "Không đạt"}
+                      Kết quả: {reportDetail.qualified ? "Đạt yêu cầu" : "Không đạt"}
                     </Text>
                   </>
+                ) : (
+                  <Text className="text-black mt-2 text-lg">
+                    Đánh giá: Chưa đánh giá
+                  </Text>
                 )}
 
-                {reportDetail && !reportDetail?.statusID && (
+                {detail.textDetail && (
                   <>
-                    <Text className="text-black mt-2 text-lg">
-                      Đánh giá: Chưa đánh giá
+                    <Text className="text-black font-bold mt-6 text-lg">Nội dung văn bản:</Text>
+                    <Text className="text-black mt-2">
+                      Thời gian tải lên: {new Date(detail.textDetail.data.uploadTime).toLocaleString("vi-VN")}
                     </Text>
-                  </>
-                )}
-                <Text className="text-black mt-2 text-lg">
-                  Vị trí: {reportDetail.lat}, {reportDetail.lon}
-                </Text>
-                {detail.data.type === "text" && detail.content?.content && (
-                  <>
-                    <Text className="text-black font-bold mt-4 text-lg">Nội dung văn bản:</Text>
-                    <Text className="text-black">{detail.content.content}</Text>
+                    {detail.textDetail.content?.content && (
+                      <Text className="text-black mt-2">{detail.textDetail.content.content}</Text>
+                    )}
                   </>
                 )}
 
-                {detail.data.type === "image" && detail.content?.content && (
+                {detail.imageDetail && (
                   <>
-                    <Text className="text-black font-bold mt-4 text-lg">Ảnh đã gửi:</Text>
-                    <Image
-                      source={{ uri: `data:image/jpeg;base64,${detail.content.content}` }}
-                      style={{
-                        width: "100%",
-                        height: 200,
-                        marginTop: 8,
-                        borderRadius: 12,
-                      }}
-                      resizeMode="contain"
-                    />
+                    <Text className="text-black font-bold mt-6 text-lg">Ảnh đã gửi:</Text>
+                    <Text className="text-black mt-2">
+                      Thời gian tải lên: {new Date(detail.imageDetail.data.uploadTime).toLocaleString("vi-VN")}
+                    </Text>
+                    {detail.imageDetail.content?.content && (
+                      <Image
+                        source={{ uri: `data:image/jpeg;base64,${detail.imageDetail.content.content}` }}
+                        style={{
+                          width: "100%",
+                          height: 200,
+                          marginTop: 8,
+                          borderRadius: 12,
+                        }}
+                        resizeMode="contain"
+                      />
+                    )}
                   </>
                 )}
 
-                {detail.status && Object.keys(detail.status).length > 0 && (
+                {(detail.textDetail?.status?.statuses || detail.imageDetail?.status?.statuses) && (
                   <>
-                    <Text className="text-black font-bold mt-4">Trạng thái xử lý:</Text>
-                    <Text className="text-black">{JSON.stringify(detail.status)}</Text>
+                    <Text className="text-black font-bold mt-6 text-lg">Kết quả xử lý:</Text>
+                    {Object.entries(
+                      detail.textDetail?.status?.statuses || detail.imageDetail?.status?.statuses || {}
+                    ).map(([key, value]) => {
+                      if (!value) return null;
+                      let label = '';
+                      switch (key) {
+                        case 'ObstaclesFlag':
+                          label = 'Chướng ngại vật';
+                          break;
+                        case 'FloodedFlag':
+                          label = 'Ngập nước';
+                          break;
+                        case 'PoliceFlag':
+                          label = 'Có CSGT';
+                          break;
+                        case 'TrafficJamFlag':
+                          label = 'Ùn tắc';
+                          break;
+                        default:
+                          label = key;
+                      }
+                      return (
+                        <Text key={key} className="text-black ml-2 mt-1">
+                          • {label}
+                        </Text>
+                      );
+                    })}
                   </>
                 )}
               </ScrollView>

@@ -7,7 +7,7 @@ interface Props {
   onClose: () => void;
   notifications: Notification[];
   onOpenStatus: (status: Notification) => void;
-  onMarkAllRead?: () => void;
+  hasUnread?: boolean;
 }
 
 export default function NotificationDropdown({
@@ -15,8 +15,9 @@ export default function NotificationDropdown({
   onClose,
   notifications,
   onOpenStatus,
-  onMarkAllRead,
+  hasUnread,
 }: Props) {
+  const [toggle, setToggle] = React.useState(hasUnread || false);
   return (
     <Modal transparent animationType="fade" visible={visible} onRequestClose={onClose}>
       <Pressable
@@ -26,8 +27,8 @@ export default function NotificationDropdown({
         <View className="bg-white rounded-md shadow-lg p-2 w-72 mr-2 mt-2 max-h-96">
           <View className="flex-row justify-between items-center px-2 pb-2">
             <Text className="text-black font-semibold">Thông báo</Text>
-            {notifications.length > 0 && onMarkAllRead && (
-              <TouchableOpacity onPress={onMarkAllRead}>
+            {notifications.length > 0 && toggle && (
+              <TouchableOpacity onPress={() => setToggle(!toggle)}>
                 <Text className="text-blue-500 text-sm">Đánh dấu đã xem</Text>
               </TouchableOpacity>
             )}
@@ -37,18 +38,28 @@ export default function NotificationDropdown({
             <Text className="text-gray-500 px-2 py-2">Không có tình trạng mới</Text>
           ) : (
             <ScrollView className="max-h-80">
-              {notifications.map((n) => (
+              {notifications.map((n, index) => (
                 <TouchableOpacity
                   key={n._id}
-                  className="py-2 px-2 border-b border-gray-200"
+                  className="py-2 px-2 border-b border-gray-200 relative"
                   onPress={() => onOpenStatus(n)}
                 >
+                  {n.type === 'VALIDATION' && (
+                    <Text className="text-blue-700 font-semibold mb-1">
+                      Thông báo dữ liệu đã gửi
+                    </Text>
+                  )}
+                  {n.type === 'STATUS' && (
+                    <Text className="text-green-700 font-semibold mb-1">
+                      Tình trạng giao thông
+                    </Text>
+                  )}
                   <Text className="text-black font-medium">{n.content}</Text>
-                  {!n.had_read && (
+                  {!n.had_read && toggle && (
                     <View className="absolute top-2 right-2 bg-red-600 w-2 h-2 rounded-full" />
                   )}
                   <Text className="text-xs text-gray-400 mt-1">
-                    {new Date(n.timestamp).toLocaleString()}
+                    {new Date(n.timestamp || n.createdDate).toLocaleString()}
                   </Text>
                 </TouchableOpacity>
               ))}
