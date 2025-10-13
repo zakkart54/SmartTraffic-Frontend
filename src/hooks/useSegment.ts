@@ -84,10 +84,19 @@ export const useSegment = () => {
       }),
     [request]
   );
+
+  const getSegmentById = useCallback(
+    (id:string) =>
+      request<Segment>(`${base}/${id}`, {
+        method: "GET"
+      }),
+    [request]
+  );
   return {
     isLoading,
     error,
     getMapSegment,
+    getSegmentById,
     findSegmentByGPS
   };
 };

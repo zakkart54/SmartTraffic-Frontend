@@ -27,7 +27,6 @@ import NavigationBar from '@/components/NavigationBar';
 import PrimaryButton from '@/components/PrimaryButton';
 import { useData } from '@/hooks/useData';
 import { useReport } from '@/hooks/useReport';
-// import { format } from "date-fns";
 import { useTheme } from "@/hooks/useTheme";
 import {useAuth} from "../hooks/useAuth";
 import { useAppSettings } from '@/hooks/useAppSetting';
@@ -250,6 +249,7 @@ export default function ReportPage() {
           lat: location[0],
           lon: location[1],
         });
+        Alert.alert('Thành công', 'Hình ảnh và văn bản đã được gửi.');
       }
       else if (selectedType === 'text') {
         const data = await addTextData(dataUri);

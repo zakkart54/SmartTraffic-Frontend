@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, TouchableOpacity, Modal, Pressable, ScrollView } from "react-native";
 import { Notification } from "../hooks/useNotification";
 
@@ -18,6 +18,14 @@ export default function NotificationDropdown({
   hasUnread,
 }: Props) {
   const [toggle, setToggle] = React.useState(hasUnread || false);
+    const sortedNotifications = useMemo(() => {
+      return [...notifications].sort((a, b) => {
+        const dateA = new Date(a?.createdDate || a?.timestamp).getTime();
+        const dateB = new Date(b?.createdDate || b?.createdDate).getTime();
+        return dateB - dateA;
+      });
+    }, [notifications]);
+  
   return (
     <Modal transparent animationType="fade" visible={visible} onRequestClose={onClose}>
       <Pressable
@@ -34,11 +42,11 @@ export default function NotificationDropdown({
             )}
           </View>
 
-          {notifications.length === 0 ? (
+          {sortedNotifications.length === 0 ? (
             <Text className="text-gray-500 px-2 py-2">Không có tình trạng mới</Text>
           ) : (
             <ScrollView className="max-h-80">
-              {notifications.map((n, index) => (
+              {sortedNotifications.map((n, index) => (
                 <TouchableOpacity
                   key={n._id}
                   className="py-2 px-2 border-b border-gray-200 relative"

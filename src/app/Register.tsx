@@ -6,7 +6,6 @@ import AppLogo from "../components/AppLogo";
 import { router } from "expo-router";
 import { useUser } from "../hooks/useUser";
 import { useTheme } from "@/hooks/useTheme";
-// import { format } from "date-fns";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");

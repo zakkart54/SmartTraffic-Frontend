@@ -36,7 +36,7 @@ export function usePushNotification() {
     
     responseListener.current = Notifications.addNotificationResponseReceivedListener(
       (response) => {
-        console.log("User tapped notification:", response.notification);
+        // console.log("User tapped notification:", response.notification);
         router.replace("/Maps");
       }
     );

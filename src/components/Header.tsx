@@ -34,10 +34,6 @@ export default function Header({ hideMenu= false }: Props) {
       const isLoggedIn = await checkLoggedIn();
   
       if (isLoggedIn) {
-        if (userFullName) {
-          setDisplayName(userFullName);
-          return;
-        }
         const name = await fetchUserFullName(null);
         setDisplayName(name);
       } else {

@@ -12,7 +12,7 @@ export interface ReportEntry {
   dataImgID?: string;
   eval?: number;
   qualified?: boolean;
-  createdDate?: string; // ISO date
+  createdDate?: { $date: string };
   lat?: number;
   lon?: number;
   segmentID?: string;
@@ -120,6 +120,32 @@ export const useReport = () => {
     [request]
   );
 
+  const getReportByGps = useCallback(
+    async (lat:number, lon:number) => {
+      setIsLoading(true);
+      const data = {
+        lat: lat,
+        lon: lon
+      }
+      try {
+        return await request<any>(`${base}/gps`, {
+          method: "POST",
+          data: JSON.stringify(data),
+          headers: { "Content-Type": "application/json" },
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [request]
+  );
+
+  const getStatusInfoByID = useCallback(
+    (id: string) => request<ReportEntry[]>(`${API_URL}/trafficStatusInfo/${id}`),
+    [request]
+  );
+
+
   return {
     isLoading,
     error,
@@ -127,6 +153,8 @@ export const useReport = () => {
     getAllUnqualifiedReport,
     getReportByID,
     getReportByUploader,
+    getReportByGps,
+    getStatusInfoByID,
     addReport,
     updateReport,
     deleteReport,

@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { Alert, Linking } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from 'expo-location';
+import { set } from "zod";
 
 type AppSettings = {
   notificationsEnabled: boolean;
@@ -48,6 +49,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   };
 
   const toggleWatchLocation = async (enabled: boolean) => {
+    if (!enabled) setLocation(null);
     if (subscriber) {
       subscriber.remove();
       setSubscriber(null);
@@ -75,8 +77,9 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
       const sub = await Location.watchPositionAsync(
         {
-          accuracy: Location.Accuracy.Balanced,
-          distanceInterval: settings.moveDistance,
+          accuracy: Location.Accuracy.BestForNavigation,
+          distanceInterval: 100,
+          timeInterval: 10000
         },
         (pos) => {
           const coords = [

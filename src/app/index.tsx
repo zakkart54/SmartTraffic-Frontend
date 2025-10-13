@@ -1,62 +1,43 @@
 import React, { useCallback, useRef, useState, useEffect } from 'react';
-import { View, Text, ImageBackground, TouchableOpacity, ScrollView, Button } from 'react-native';
+import { View, Text, ImageBackground, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import NavigationBar from '@/components/NavigationBar';
 import { router } from "expo-router";
 import Header from '@/components/Header';
-// import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
 import { useAppSettings } from '@/hooks/useAppSetting';
 import { useSegment } from "@/hooks/useSegment";
+import { useReport } from "@/hooks/useReport";
 import * as Location from 'expo-location';
 
-const trafficData = {
-  // location: {
-  //   longitude: '10.8263°',
-  //   latitude: '106.7047°',
-  //   longitudeDir: 'Bắc',
-  //   latitudeDir: 'Đông',
-  //   street: 'Đường Đặng Thùy Trâm',
-  // },
-  status: [
-    {
-      name: 'Kẹt xe trên đường Đặng Thùy Trâm',
-      time: '12:30 PM',
-      reliability: '90%',
-      text: 'Đường đông đúc, xe cộ di chuyển chậm và có thể xảy ra ùn tắc.',
-      image: '',
-      description: 'Đường đông đúc, xe cộ di chuyển chậm.',
-      location: {
-        longitude: '10.8263°',
-        latitude: '106.7047°',
-        longitudeDir: 'Đông',
-        latitudeDir: 'Bắc',
-        street: 'Đường Đặng Thùy Trâm',
-      },
-    },
-    {
-      name: 'Tai nạn trên cầu Bình Lợi',
-      time: '01:15 PM',
-      reliability: '40%',
-      text: '',
-      // image: require('@/asset/detailimage.png'),
-      description: 'Tai nạn giao thông, gây ùn tắc nhẹ.',
-      location: {
-        longitude: '10.8300°',
-        latitude: '106.7100°',
-        longitudeDir: 'Đông',
-        latitudeDir: 'Bắc',
-        street: 'Cầu Bình Lợi',
-      },
-    },
-  ]
-};
+interface ReportWithSegment {
+  _id: string;
+  createdDate: string;
+  dataImgID: string;
+  dataTextID: string;
+  eval: number;
+  lat: number;
+  lon: number;
+  qualified: boolean;
+  segmentID: string;
+  statusID: string;
+  uploaderID: string;
+  segmentName?: string;
+  currentStatus?: {
+    FLOOD: boolean;
+    JAM: boolean;
+    OBSTACLE: boolean;
+    POLICE: boolean;
+  };
+}
 
 export default function HomePage() {
-  // const { accessToken, refresh, logout } = useAuth();
-  // const hasCheckedToken = useRef(false);
   const { theme } = useTheme();
   const { location } = useAppSettings();
-  const { findSegmentByGPS } = useSegment();
+  const { findSegmentByGPS, getSegmentById } = useSegment();
+  const { getReportByGps, isLoading: reportsLoading, error: reportsError } = useReport();
+  const [reports, setReports] = useState<ReportWithSegment[]>([]);
+  const [loadingSegments, setLoadingSegments] = useState(false);
+  
   const [streetName, setStreetName] = useState<string>("");
   const [coords, setCoords] = useState<{
     latitude: string;
@@ -66,6 +47,23 @@ export default function HomePage() {
   } | null>(null);
 
   const [permission, setPermission] = useState('granted');
+
+  // const getCurrentHourStatus = (statusArray: any[]) => {
+  //   const currentHour = new Date().getHours();
+  //   if (statusArray && statusArray.length > 0) {
+  //     return statusArray[currentHour] || statusArray[0];
+  //   }
+  //   return { FLOOD: false, JAM: false, OBSTACLE: false, POLICE: false };
+  // };
+
+  // const formatStatus = (status: any) => {
+  //   const statuses = [];
+  //   if (status.JAM) statuses.push('🚗 Kẹt xe');
+  //   if (status.FLOOD) statuses.push('🌊 Ngập nước');
+  //   if (status.OBSTACLE) statuses.push('⚠️ Chướng ngại');
+  //   if (status.POLICE) statuses.push('👮 Cảnh sát');
+  //   return statuses.length > 0 ? statuses.join(' • ') : '✅ Thông thoáng';
+  // };
 
   useEffect(() => {
     async function getLocation() {
@@ -77,7 +75,7 @@ export default function HomePage() {
         }
         setPermission("granted");
         const location = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Balanced,
+          accuracy: Location.Accuracy.BestForNavigation,
         });
       
         const { latitude, longitude } = location.coords;
@@ -97,6 +95,7 @@ export default function HomePage() {
         console.warn("Lỗi khi lấy vị trí:", err.message);
       }
     }
+    
     async function handleLocation() {
       if (location) {
         const [lat, lon] = location;
@@ -119,11 +118,43 @@ export default function HomePage() {
 
     (async () => {
       try {
-        const [lat,lon] = await handleLocation();
-        const segment = await findSegmentByGPS(lat, lon);
+        const [lat, lon] = await handleLocation();
+        if (lat) setStreetName("Đang tìm tên đường...");
+        
+        const [segment, reportsData] = await Promise.all([
+          findSegmentByGPS(lat, lon),
+          getReportByGps(lat, lon),
+        ]);
+        if (reportsData && reportsData.length > 0) {
+          setLoadingSegments(true);
+          const reportsWithSegments = await Promise.all(
+            reportsData.map(async (report: any) => {
+              try {
+                const segmentData = await getSegmentById(report.segmentID);
+                return {
+                  ...report,
+                  segmentName: segmentData?.tags?.name || 'Không xác định',
+                  // currentStatus: getCurrentHourStatus(segmentData?.status),
+                };
+              } catch (err) {
+                console.warn(`Không thể lấy segment ${report.segmentID}:`, err);
+                return {
+                  ...report,
+                  segmentName: 'Không xác định',  
+                  // currentStatus: { FLOOD: false, JAM: false, OBSTACLE: false, POLICE: false },
+                };
+              }
+            })
+          );
+          setReports(reportsWithSegments);
+          setLoadingSegments(false);
+        } else {
+          setReports([]);
+        }
+
         const streetName = segment?.tags?.name;
         if (streetName) {
-          setStreetName(`Đường ${streetName}`);
+          setStreetName(`${streetName}`);
         } else {
           setStreetName("Không tìm thấy tên đường");
         }
@@ -132,6 +163,15 @@ export default function HomePage() {
       }
     })();
   }, [location]);
+
+  const formatDate = (dateString: string) => {
+    const date = new Date (dateString);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    return `${hours}:${minutes} - ${day}/${month}/${date.getFullYear()}`;
+  };
 
   return (
     <ImageBackground
@@ -147,7 +187,9 @@ export default function HomePage() {
       <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
         <View className="flex-1 px-4 pt-4 justify-evenly">
           <View className="mt-20">
-            <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>Vị trí hiện tại</Text>
+            <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>
+              Vị trí hiện tại
+            </Text>
 
             <View className="bg-[#edf2fc] p-8 rounded-2xl mt-4">
               {permission === "denied" ? (
@@ -192,29 +234,67 @@ export default function HomePage() {
 
           <View className="mt-20">
             <Text className={`text-4xl font-bold text-center ${theme === "dark" ? "text-white" : "text-[#063970]"}`}>
-              Tình trạng giao thông
+              Báo cáo giao thông
             </Text>
-            {trafficData.status.map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() =>
-                  router.push({
-                    pathname: '/DetailStatus',
-                    params: { status: JSON.stringify(item) },
-                  })
-                }
-              >
-                <View className="bg-[#edf2fc] mb-2 p-6 rounded-xl mt-4">
-                  <Text className="text-[#063970] text-2xl font-bold">
-                    {item.name} {'-'} {item.time}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))}
+            
+            {reportsLoading || loadingSegments ? (
+              <View className="bg-[#edf2fc] p-6 rounded-xl mt-4">
+                <ActivityIndicator size="large" color="#063970" />
+                <Text className="text-center text-[#063970] mt-2">
+                  {loadingSegments ? 'Đang tải thông tin đường...' : 'Đang tải dữ liệu...'}
+                </Text>
+              </View>
+            ) : reportsError ? (
+              <View className="bg-[#edf2fc] p-6 rounded-xl mt-4">
+                <Text className="text-center text-red-600">{reportsError}</Text>
+              </View>
+            ) : reports.length === 0 ? (
+              <View className="bg-[#edf2fc] p-6 rounded-xl mt-4">
+                <Text className="text-center text-[#063970]">Chưa có báo cáo nào</Text>
+              </View>
+            ) : (
+              reports.map((report) => (
+                <TouchableOpacity
+                  key={report._id}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/DetailStatus',
+                      params: { 
+                        reportId: report._id,
+                        report: JSON.stringify(report)
+                      },
+                    })
+                  }
+                >
+                  <View className="bg-[#edf2fc] mb-2 p-6 rounded-xl mt-4">
+                    <Text className="text-[#063970] text-2xl font-bold mb-2">
+                      {report.segmentName ? `Đường ${report.segmentName}` : 'Không xác định'}
+                    </Text>
+                    
+                    {/* {report.currentStatus && (
+                      <Text className="text-[#063970] text-base font-semibold mb-1">
+                        {formatStatus(report.currentStatus)}
+                      </Text>
+                    )} */}
+                      <Text className="text-[#063970] text-base font-semibold mb-1">
+                        Có tình trạng giao thông mới
+                      </Text>
+                    
+                    <Text className="text-[#063970] text-base">
+                      Vị trí: {report.lat.toFixed(6)}, {report.lon.toFixed(6)}
+                    </Text>
+                    <Text className="text-[#063970] text-base">
+                      Thời gian: {formatDate(report.createdDate)}
+                    </Text>
+                    <Text className="text-[#063970] text-base">
+                      Độ tin cậy: {(report.eval * 100).toFixed(0)}%
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))
+            )}
           </View>
         </View>
-        <View>
-    </View>
       </ScrollView>
       <NavigationBar />
     </ImageBackground>

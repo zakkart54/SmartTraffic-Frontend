@@ -21,7 +21,7 @@ const apiKey = Constants.expoConfig?.extra?.GOOGLE_MAPS_API_KEY;
 async function getCurrentLocation(): Promise<Region | null> {
   const { status } = await Location.requestForegroundPermissionsAsync();
   if (status !== "granted") {
-    console.log("Quyền truy cập vị trí bị từ chối");
+    // console.log("Quyền truy cập vị trí bị từ chối");
     return null;
   }
   const location = await Location.getCurrentPositionAsync({

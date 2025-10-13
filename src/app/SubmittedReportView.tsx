@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { View, Text, ImageBackground, ActivityIndicator, ScrollView, TouchableOpacity, Modal, Image } from 'react-native';
 import NavigationBar from '@/components/NavigationBar';
 import Header from '@/components/Header';
@@ -29,6 +29,14 @@ const SubmittedReport = () => {
     };
     fetchData();
   }, []);
+
+  const sortedReports = useMemo(() => {
+    return [...reportData].sort((a, b) => {
+      const dateA = new Date(a.createdDate).getTime();
+      const dateB = new Date(b.createdDate).getTime();
+      return dateB - dateA;
+    });
+  }, [reportData]);
 
   const openDetailModal = async (report: any) => {
     setModalVisible(true);
@@ -110,7 +118,7 @@ const SubmittedReport = () => {
             Chưa có thông tin nào được gửi.
           </Text>
         ) : (
-          reportData.map((report, index) => {
+          sortedReports.map((report, index) => {
             const { types, uploadTime } = getDataInfo(report);
             
             return (
@@ -196,7 +204,7 @@ const SubmittedReport = () => {
                   Thời gian tạo: {new Date(reportDetail.createdDate).toLocaleString("vi-VN")}
                 </Text>
 
-                {reportDetail?.statusID ? (
+                {reportDetail?.eval ? (
                   <>
                     <Text className="text-black mt-2 text-lg">
                       Đánh giá: {(reportDetail.eval * 100).toFixed(0)}%
